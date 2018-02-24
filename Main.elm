@@ -2,8 +2,10 @@ module Main exposing (..)
 
 import Html
 import Html.Styled.Attributes exposing (css)
+import Html.Styled.Events exposing (onClick)
 import Html.Styled exposing (..)
 import Css exposing (..)
+import Array
 
 
 view : Model -> Html Msg
@@ -30,6 +32,8 @@ view model =
             )
             model.verb
             |> Maybe.withDefault (text "no verbs")
+        , button [ onClick Previous ] [ text "previous" ]
+        , button [ onClick Next ] [ text "next" ]
         ]
 
 
@@ -40,22 +44,32 @@ type alias Verb =
     }
 
 
-verbs : List Verb
+verbs : Array.Array Verb
 verbs =
-    [ { word = "daħal", radicals = [ "d", "ħ", "l" ], form = 1 } ]
+    Array.fromList
+        [ { word = "daħal", radicals = [ "d", "ħ", "l" ], form = 1 }
+        , { word = "daħħal", radicals = [ "d", "ħ", "l" ], form = 2 }
+        , { word = "tdaħħal", radicals = [ "d", "ħ", "l" ], form = 5 }
+        ]
 
 
 type alias Model =
-    { verb : Maybe Verb }
+    { verb : Maybe Verb, index : Int }
 
 
 type Msg
-    = Fort
+    = Next
+    | Previous
 
 
 update : Msg -> Model -> Model
-update message model =
-    model
+update msg model =
+    case msg of
+        Next ->
+            { model | verb = Array.get (model.index + 1) verbs, index = model.index + 1 }
+
+        Previous ->
+            { model | verb = Array.get (model.index - 1) verbs, index = model.index - 1 }
 
 
 main : Program Never Model Msg
@@ -63,5 +77,5 @@ main =
     Html.beginnerProgram
         { view = view >> toUnstyled
         , update = update
-        , model = { verb = List.head verbs }
+        , model = { verb = Array.get 0 verbs, index = 0 }
         }
