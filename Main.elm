@@ -32,6 +32,13 @@ view model =
             )
             model.verb
             |> Maybe.withDefault (text "no verbs")
+        , div [] <|
+            List.map
+                (\form ->
+                    button [ onClick <| Answer form ] [ text <| toString form ]
+                )
+                [ 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 ]
+        , text model.message
         , button [ onClick Previous ] [ text "previous" ]
         , button [ onClick Next ] [ text "next" ]
         ]
@@ -50,26 +57,44 @@ verbs =
         [ { word = "daħal", radicals = [ "d", "ħ", "l" ], form = 1 }
         , { word = "daħħal", radicals = [ "d", "ħ", "l" ], form = 2 }
         , { word = "tdaħħal", radicals = [ "d", "ħ", "l" ], form = 5 }
+        , { word = "ndaħal", radicals = [ "d", "ħ", "l" ], form = 7 }
         ]
 
 
 type alias Model =
-    { verb : Maybe Verb, index : Int }
+    { verb : Maybe Verb, index : Int, message : String }
 
 
 type Msg
     = Next
     | Previous
+    | Answer Int
 
 
 update : Msg -> Model -> Model
 update msg model =
     case msg of
         Next ->
-            { model | verb = Array.get (model.index + 1) verbs, index = model.index + 1 }
+            initialModel (model.index + 1)
 
         Previous ->
-            { model | verb = Array.get (model.index - 1) verbs, index = model.index - 1 }
+            initialModel (model.index - 1)
+
+        Answer form ->
+            case model.verb of
+                Just verb ->
+                    if verb.form == form then
+                        { model | message = "correct!" }
+                    else
+                        { model | message = "wrong, it is " ++ toString verb.form }
+
+                Nothing ->
+                    model
+
+
+initialModel : Int -> Model
+initialModel index =
+    { verb = Array.get index verbs, index = index, message = "choose the right answer" }
 
 
 main : Program Never Model Msg
@@ -77,5 +102,5 @@ main =
     Html.beginnerProgram
         { view = view >> toUnstyled
         , update = update
-        , model = { verb = Array.get 0 verbs, index = 0 }
+        , model = initialModel 0
         }
