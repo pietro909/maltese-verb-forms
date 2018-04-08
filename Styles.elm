@@ -10,7 +10,19 @@ import Array
 
 
 radical =
-    [ color (rgb 250 0 250) ]
+    [ color (rgb 250 0 50) ]
+
+
+vowel =
+    [ color (rgb 50 50 50) ]
+
+
+consonant =
+    [ color (rgb 0 150 250) ]
+
+
+marker =
+    [ color (rgb 250 50 250) ]
 
 
 verb : Attribute msg

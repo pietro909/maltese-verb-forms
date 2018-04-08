@@ -7,6 +7,7 @@ import Html.Styled exposing (..)
 import Array
 import Styles
 import Maybe.Extra as Mx
+import Verbs exposing (Verb, verbs, LetterType(..), toPrintable)
 
 
 view : Model -> Html Msg
@@ -28,16 +29,27 @@ view model =
 viewNextVerb : Verb -> Model -> Html Msg
 viewNextVerb verb model =
     let
-        verbView { word, radicals, form } =
-            String.split "" word
+        verbView verb =
+            toPrintable verb
                 |> List.reverse
                 |> List.foldl
                     (\letter acc ->
-                        if List.member letter radicals then
-                            (styled span Styles.radical [] [ text letter ])
-                                :: acc
-                        else
-                            (text letter) :: acc
+                        case letter of
+                            Consonant char ->
+                                (styled span Styles.consonant [] [ text char ])
+                                    :: acc
+
+                            Vowel char ->
+                                (styled span Styles.vowel [] [ text char ])
+                                    :: acc
+
+                            Radical char ->
+                                (styled span Styles.radical [] [ text char ])
+                                    :: acc
+
+                            Symbol char ->
+                                (styled span Styles.marker [] [ text char ])
+                                    :: acc
                     )
                     []
                 |> div [ Styles.verb ]
@@ -49,28 +61,15 @@ viewNextVerb verb model =
                     |> Maybe.withDefault (text "no verbs")
                 , text model.message
                 , div [ Styles.choices ] <|
-                    List.map (\form -> button [ onClick <| Answer form, disabled model.done ] [ text <| toString form ])
+                    List.map
+                        (\form ->
+                            button [ onClick <| Answer form, disabled model.done ]
+                                [ text <| toString form ]
+                        )
                         [ 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 ]
                 , button [ onClick Next, disabled (not model.done) ] [ text "next" ]
                 ]
             ]
-
-
-type alias Verb =
-    { word : String
-    , radicals : List String
-    , form : Int
-    }
-
-
-verbs : Array.Array Verb
-verbs =
-    Array.fromList
-        [ { word = "daħal", radicals = [ "d", "ħ", "l" ], form = 1 }
-        , { word = "daħħal", radicals = [ "d", "ħ", "l" ], form = 2 }
-        , { word = "tdaħħal", radicals = [ "d", "ħ", "l" ], form = 5 }
-        , { word = "ndaħal", radicals = [ "d", "ħ", "l" ], form = 7 }
-        ]
 
 
 type alias Model =
