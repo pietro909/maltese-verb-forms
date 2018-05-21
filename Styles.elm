@@ -45,7 +45,12 @@ choices =
 
 container : Attribute msg
 container =
-    css [ displayFlex, flexFlow1 column, width (pct 50) ]
+    css
+        [ displayFlex
+        , flexFlow1 column
+        , alignItems center
+        , flex (int 1)
+        ]
 
 
 page : Attribute msg
@@ -54,6 +59,8 @@ page =
         [ displayFlex
         , flex (int 1)
         , width (pct 100)
+        , height (pct 100)
         , justifyContent center
+        , alignItems center
         , backgroundColor Colors.silver
         ]
