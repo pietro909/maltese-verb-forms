@@ -27,7 +27,7 @@ marker =
 
 verb : Attribute msg
 verb =
-    css [ displayFlex, fontSize (em 2), justifyContent center, width (pct 100) ]
+    css [ displayFlex, fontSize (em 3.6), justifyContent center, width (pct 100) ]
 
 
 disableIfNot : Bool -> Attribute msg
@@ -53,10 +53,11 @@ choice =
         , justifyContent center
         , alignItems center
         , fontSize (em 2)
-
-        --, backgroundColor Colors.teal
+        , backgroundColor transparent
         , width (em 2)
         , height (em 2)
+        , property "-webkit-appearance" "none"
+        , borderWidth (em 0)
         ]
 
 
@@ -67,6 +68,8 @@ container =
         , flexFlow1 column
         , alignItems center
         , flex (int 1)
+        , justifyContent spaceBetween
+        , height (pct 54)
         ]
 
 
@@ -90,7 +93,7 @@ buttonNextContainer =
         [ displayFlex
         , justifyContent center
         , alignItems center
-        , borderRadius (pc 50)
+        , borderRadius (pct 50)
         , backgroundColor (hex "CF142A")
         , width (em 4)
         , height (em 4)
@@ -105,6 +108,15 @@ buttonNext =
     css
         [ color Colors.white
         , fontSize (em 1)
+        , property "-webkit-appearance" "none"
+        , borderWidth (em 0)
+        , backgroundColor transparent
+        ]
 
-        --, backgroundColor (hex "0E9260")
+
+message : Attribute msg
+message =
+    css
+        [ height (em 1)
+        , fontFamilies [ "cursive" ]
         ]

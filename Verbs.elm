@@ -1,4 +1,4 @@
-module Verbs exposing (Verb, verbs, toPrintable, LetterType(..))
+module Verbs exposing (Verb, verbs, toPrintable, getWord, LetterType(..))
 
 import Dict
 import Array
@@ -123,3 +123,8 @@ toPrintable { word, radicals, form } =
                 ( 0, [] )
             |> Tuple.second
             |> List.reverse
+
+
+getWord : Verb -> String
+getWord { word } =
+    word

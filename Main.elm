@@ -7,7 +7,7 @@ import Html.Styled exposing (..)
 import Array
 import Styles
 import Maybe.Extra as Mx
-import Verbs exposing (Verb, verbs, LetterType(..), toPrintable)
+import Verbs exposing (Verb, verbs, LetterType(..), toPrintable, getWord)
 import Random
 
 
@@ -57,20 +57,27 @@ viewNextVerb verb model =
                                     :: acc
                     )
                     []
-                |> div [ Styles.verb ]
 
         buttonNext =
             if model.done then
                 div [ Styles.buttonNextContainer ]
-                    [ button [ Styles.buttonNext, onClick GetNext, disabled (not model.done) ] [ text "next" ] ]
+                    [ button [ Styles.buttonNext, onClick GetNext ] [ text "next" ] ]
             else
                 div [ Styles.buttonNextContainer ]
-                    [ button [ Styles.buttonNext, onClick GetNext, disabled (not model.done) ] [ text "?" ] ]
-    in
-        [ Maybe.map verbView model.verb
-            |> Maybe.withDefault (text "no verbs")
+                    [ button [ Styles.buttonNext, onClick ShowSuggestions ] [ text "?" ] ]
 
-        --, text model.message
+        theVerb =
+            model.verb
+                |> Maybe.map
+                    (\verb ->
+                        if model.showSuggestions || model.done then
+                            verbView verb
+                        else
+                            [ text (getWord verb) ]
+                    )
+                |> Maybe.withDefault ([ text "no verbs" ])
+    in
+        [ div [ Styles.verb ] theVerb
         , div [ Styles.choices ] <|
             List.map
                 (\form ->
@@ -82,6 +89,7 @@ viewNextVerb verb model =
                         [ text <| toString form ]
                 )
                 (buildButtons model.first verb.form)
+        , div [ Styles.message ] [ text model.message ]
         , buttonNext
         ]
 
@@ -146,6 +154,7 @@ type alias Model =
     , message : String
     , first : Int
     , verbs : Array.Array Verb
+    , showSuggestions : Bool
     }
 
 
@@ -154,6 +163,7 @@ type Msg
     | GetNext
     | Answer Int
     | Restart
+    | ShowSuggestions
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
@@ -164,6 +174,9 @@ update msg model =
 
         GetNext ->
             ( model, generateNumber )
+
+        ShowSuggestions ->
+            ( { model | showSuggestions = True }, Cmd.none )
 
         Restart ->
             ( initialModel 5 0, Cmd.none )
@@ -190,8 +203,9 @@ initialModel first index =
     , verb = Array.get index verbs
     , first = first
     , index = index
-    , message = "choose the right answer"
+    , message = ""
     , done = False
+    , showSuggestions = False
     }
 
 
