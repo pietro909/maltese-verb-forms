@@ -59,70 +59,84 @@ viewNextVerb verb model =
                     []
                 |> div [ Styles.verb ]
 
-        {- A trivial pseudo randomizer -}
-        buttons =
-            let
-                isEven x =
-                    rem x 2 == 0
-
-                numbersA =
-                    [ 1, 2, 3, 4, 5 ]
-
-                numbersB =
-                    [ 6, 7, 8, 9, 10 ]
-
-                mix =
-                    List.foldl
-                        (\n ( front, back ) ->
-                            if n == model.first then
-                                ( [], front ++ n :: back )
-                            else if isEven n then
-                                ( n :: front, back )
-                            else
-                                ( back, List.append front [ n ] )
-                        )
-                        ( [], [] )
-                        >> (\( f, b ) ->
-                                if isEven verb.form then
-                                    List.reverse b ++ f
-                                else
-                                    List.reverse (b ++ f)
-                           )
-
-                start =
-                    if isEven model.first then
-                        mix (mix numbersA ++ List.reverse numbersB)
-                    else
-                        mix numbersB ++ mix (List.reverse numbersA)
-            in
-                List.foldl
-                    (\n accumulator ->
-                        if List.member n accumulator then
-                            accumulator
-                        else if List.length accumulator == 4 then
-                            accumulator
-                        else if isEven n then
-                            n :: accumulator
-                        else
-                            List.append accumulator [ n ]
-                    )
-                    [ verb.form ]
-                    start
-                    |> mix
+        buttonNext =
+            if model.done then
+                div [ Styles.buttonNextContainer ]
+                    [ button [ Styles.buttonNext, onClick GetNext, disabled (not model.done) ] [ text "next" ] ]
+            else
+                div [ Styles.buttonNextContainer ]
+                    [ button [ Styles.buttonNext, onClick GetNext, disabled (not model.done) ] [ text "?" ] ]
     in
-        [ h1 [] [ text "Verb forms" ]
-        , Maybe.map verbView model.verb
+        [ Maybe.map verbView model.verb
             |> Maybe.withDefault (text "no verbs")
-        , text model.message
+
+        --, text model.message
         , div [ Styles.choices ] <|
             List.map
                 (\form ->
-                    button [ onClick <| Answer form, disabled model.done ]
+                    button
+                        [ onClick <| Answer form
+                        , disabled model.done
+                        , Styles.choice
+                        ]
                         [ text <| toString form ]
                 )
-                buttons
-        , button [ onClick GetNext, disabled (not model.done) ] [ text "next" ]
+                (buildButtons model.first verb.form)
+        , buttonNext
         ]
+
+
+{-| A trivial pseudo randomizer
+-}
+buildButtons seed target =
+    let
+        isEven x =
+            rem x 2 == 0
+
+        numbersA =
+            [ 1, 2, 3, 4, 5 ]
+
+        numbersB =
+            [ 6, 7, 8, 9, 10 ]
+
+        mix =
+            List.foldl
+                (\n ( front, back ) ->
+                    if n == seed then
+                        ( [], front ++ n :: back )
+                    else if isEven n then
+                        ( n :: front, back )
+                    else
+                        ( back, List.append front [ n ] )
+                )
+                ( [], [] )
+                >> (\( f, b ) ->
+                        if isEven target then
+                            List.reverse b ++ f
+                        else
+                            List.reverse (b ++ f)
+                   )
+
+        start =
+            if isEven seed then
+                mix (mix numbersA ++ List.reverse numbersB)
+            else
+                mix numbersB ++ mix (List.reverse numbersA)
+    in
+        List.foldl
+            (\n accumulator ->
+                if List.member n accumulator then
+                    mix accumulator
+                else if List.length accumulator == 4 then
+                    accumulator
+                else if isEven n then
+                    n :: accumulator
+                else
+                    List.append accumulator [ n ]
+            )
+            [ target ]
+            start
+            |> mix
 
 
 type alias Model =

@@ -10,11 +10,11 @@ import Array
 
 
 radical =
-    [ color (rgb 250 0 50) ]
+    [ color (hex "0E9260") ]
 
 
 vowel =
-    [ color (rgb 50 50 50) ]
+    []
 
 
 consonant =
@@ -22,7 +22,7 @@ consonant =
 
 
 marker =
-    [ color (rgb 250 50 250) ]
+    [ color (hex "6D0310") ]
 
 
 verb : Attribute msg
@@ -40,7 +40,24 @@ disableIfNot can =
 
 choices : Attribute msg
 choices =
-    css [ displayFlex, fontSize (em 2), justifyContent center ]
+    css
+        [ displayFlex
+        , justifyContent center
+        ]
+
+
+choice : Attribute msg
+choice =
+    css
+        [ displayFlex
+        , justifyContent center
+        , alignItems center
+        , fontSize (em 2)
+
+        --, backgroundColor Colors.teal
+        , width (em 2)
+        , height (em 2)
+        ]
 
 
 container : Attribute msg
@@ -62,5 +79,32 @@ page =
         , height (pct 100)
         , justifyContent center
         , alignItems center
-        , backgroundColor Colors.silver
+
+        --, backgroundColor Colors.silver
+        ]
+
+
+buttonNextContainer : Attribute msg
+buttonNextContainer =
+    css
+        [ displayFlex
+        , justifyContent center
+        , alignItems center
+        , borderRadius (pc 50)
+        , backgroundColor (hex "CF142A")
+        , width (em 4)
+        , height (em 4)
+        , marginTop (em 2)
+
+        --, backgroundColor (hex "0E9260")
+        ]
+
+
+buttonNext : Attribute msg
+buttonNext =
+    css
+        [ color Colors.white
+        , fontSize (em 1)
+
+        --, backgroundColor (hex "0E9260")
         ]
