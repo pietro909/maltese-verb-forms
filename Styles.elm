@@ -6,6 +6,7 @@ import Html.Styled.Events exposing (onClick)
 import Html.Styled exposing (Attribute)
 import Css exposing (..)
 import Css.Colors as Colors
+import Css.Foreign as Foreign
 import Array
 
 
@@ -73,6 +74,13 @@ container =
         ]
 
 
+foreig =
+    Foreign.global
+        [ Foreign.html [ height (pct 100) ]
+        , Foreign.body [ height (pct 100) ]
+        ]
+
+
 page : Attribute msg
 page =
     css
@@ -82,8 +90,6 @@ page =
         , height (pct 100)
         , justifyContent center
         , alignItems center
-
-        --, backgroundColor Colors.silver
         ]
 
 
