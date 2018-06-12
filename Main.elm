@@ -9,6 +9,7 @@ import Styles
 import Maybe.Extra as Mx
 import Verbs exposing (Verb, verbs, LetterType(..), toPrintable, getWord)
 import Random
+import RawHtml
 
 
 view : Model -> Html Msg
@@ -26,9 +27,16 @@ view model =
                     ]
     in
         div [ Styles.page ]
-            [ node "meta" [ name "viewport", content "width=device-width, initial-scale=1.0, maximum-scale=1, user-scalable=no" ] []
-            , div [ Styles.container ] mainNode
+            [ node "meta"
+                [ name "viewport"
+                , content "width=device-width, initial-scale=1.0, maximum-scale=1, user-scalable=no"
+                ]
+                []
             , Styles.foreig
+            , RawHtml.githubRibbon
+
+            -- app starts here
+            , div [ Styles.container ] mainNode
             ]
 
 
