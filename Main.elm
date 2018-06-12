@@ -9,6 +9,7 @@ import Styles
 import Maybe.Extra as Mx
 import Verbs exposing (Verb, verbs, LetterType(..), toPrintable, getWord)
 import Random
+import Random.List as RandomList
 import RawHtml
 
 
@@ -159,16 +160,15 @@ buildButtons seed target =
 type alias Model =
     { verb : Maybe Verb
     , done : Bool
-    , index : Int
     , message : String
     , first : Int
-    , verbs : Array.Array Verb
+    , verbsToSee : List Verb
     , showSuggestions : Bool
     }
 
 
 type Msg
-    = Next Int
+    = Next ( Int, Maybe Verb, List Verb )
     | GetNext
     | Answer Int
     | Restart
@@ -178,17 +178,21 @@ type Msg
 update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
     case msg of
-        Next first ->
-            ( initialModel first (model.index + 1), Cmd.none )
+        Next ( first, maybeVerb, verbsToSee ) ->
+            let
+                newModel =
+                    { initialModel | verbsToSee = verbsToSee, verb = maybeVerb, first = first }
+            in
+                ( newModel, Cmd.none )
 
         GetNext ->
-            ( model, generateNumber )
+            ( model, generateNextData model.verbsToSee Next )
 
         ShowSuggestions ->
             ( { model | showSuggestions = True }, Cmd.none )
 
         Restart ->
-            ( initialModel 5 0, Cmd.none )
+            init
 
         Answer form ->
             case model.verb of
@@ -202,20 +206,29 @@ update msg model =
                     ( model, Cmd.none )
 
 
-generateNumber =
-    Random.generate Next (Random.int 1 10)
+generateNextData : List Verb -> (( Int, Maybe Verb, List Verb ) -> Msg) -> Cmd Msg
+generateNextData inputVerbs msg =
+    Random.generate msg <|
+        Random.map2
+            (\index ( maybeVerb, outputVerbs ) -> ( index, maybeVerb, outputVerbs ))
+            (Random.int 1 10)
+            (RandomList.choose inputVerbs)
 
 
-initialModel : Int -> Int -> Model
-initialModel first index =
-    { verbs = verbs
-    , verb = Array.get index verbs
-    , first = first
-    , index = index
+initialModel : Model
+initialModel =
+    { verbsToSee = verbs
+    , verb = Nothing
+    , first = 5
     , message = ""
     , done = False
     , showSuggestions = False
     }
+
+
+init : ( Model, Cmd Msg )
+init =
+    ( initialModel, generateNextData initialModel.verbsToSee Next )
 
 
 main : Program Never Model Msg
@@ -223,6 +236,6 @@ main =
     Html.program
         { view = view >> toUnstyled
         , update = update
-        , init = ( initialModel 5 0, generateNumber )
+        , init = init
         , subscriptions = \_ -> Sub.none
         }

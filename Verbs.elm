@@ -18,31 +18,30 @@ type LetterType
     | Consonant String
 
 
-verbs : Array.Array Verb
+verbs : List Verb
 verbs =
-    Array.fromList
-        [ { word = "daħal", radicals = [ "d", "ħ", "l" ], form = 1 }
-        , { word = "daħħal", radicals = [ "d", "ħ", "l" ], form = 2 }
-        , { word = "tdaħħal", radicals = [ "d", "ħ", "l" ], form = 5 }
-        , { word = "ndaħal", radicals = [ "d", "ħ", "l" ], form = 7 }
-        , { word = "fehem", radicals = [ "f", "h", "m" ], form = 1 }
-        , { word = "fiehem", radicals = [ "f", "h", "m" ], form = 3 }
-        , { word = "ftehem", radicals = [ "f", "h", "m" ], form = 8 }
-        , { word = "laqa'", radicals = [ "l", "q", "għ" ], form = 1 }
-        , { word = "laqqa'", radicals = [ "l", "q", "għ" ], form = 2 }
-        , { word = "tlaqqa'", radicals = [ "l", "q", "għ" ], form = 5 }
-        , { word = "qatel", radicals = [ "q", "t", "l" ], form = 1 }
-        , { word = "tqatel", radicals = [ "q", "t", "l" ], form = 6 }
-        , { word = "nqatel", radicals = [ "q", "t", "l" ], form = 7 }
-        , { word = "nebaħ", radicals = [ "n", "b", "ħ" ], form = 1 }
-        , { word = "nebbaħ", radicals = [ "n", "b", "ħ" ], form = 2 }
-        , { word = "tnebbaħ", radicals = [ "n", "b", "ħ" ], form = 5 }
-        , { word = "ntebaħ", radicals = [ "n", "b", "ħ" ], form = 8 }
-        , { word = "stenbaħ", radicals = [ "n", "b", "ħ" ], form = 10 }
-        , { word = "bajjad", radicals = [ "b", "j", "d" ], form = 2 }
-        , { word = "tbajjad", radicals = [ "b", "j", "d" ], form = 5 }
-        , { word = "bjad", radicals = [ "b", "j", "d" ], form = 9 }
-        ]
+    [ { word = "daħal", radicals = [ "d", "ħ", "l" ], form = 1 }
+    , { word = "daħħal", radicals = [ "d", "ħ", "l" ], form = 2 }
+    , { word = "tdaħħal", radicals = [ "d", "ħ", "l" ], form = 5 }
+    , { word = "ndaħal", radicals = [ "d", "ħ", "l" ], form = 7 }
+    , { word = "fehem", radicals = [ "f", "h", "m" ], form = 1 }
+    , { word = "fiehem", radicals = [ "f", "h", "m" ], form = 3 }
+    , { word = "ftehem", radicals = [ "f", "h", "m" ], form = 8 }
+    , { word = "laqa'", radicals = [ "l", "q", "għ" ], form = 1 }
+    , { word = "laqqa'", radicals = [ "l", "q", "għ" ], form = 2 }
+    , { word = "tlaqqa'", radicals = [ "l", "q", "għ" ], form = 5 }
+    , { word = "qatel", radicals = [ "q", "t", "l" ], form = 1 }
+    , { word = "tqatel", radicals = [ "q", "t", "l" ], form = 6 }
+    , { word = "nqatel", radicals = [ "q", "t", "l" ], form = 7 }
+    , { word = "nebaħ", radicals = [ "n", "b", "ħ" ], form = 1 }
+    , { word = "nebbaħ", radicals = [ "n", "b", "ħ" ], form = 2 }
+    , { word = "tnebbaħ", radicals = [ "n", "b", "ħ" ], form = 5 }
+    , { word = "ntebaħ", radicals = [ "n", "b", "ħ" ], form = 8 }
+    , { word = "stenbaħ", radicals = [ "n", "b", "ħ" ], form = 10 }
+    , { word = "bajjad", radicals = [ "b", "j", "d" ], form = 2 }
+    , { word = "tbajjad", radicals = [ "b", "j", "d" ], form = 5 }
+    , { word = "bjad", radicals = [ "b", "j", "d" ], form = 9 }
+    ]
 
 
 vowels : List String

@@ -4480,171 +4480,6 @@ _elm_community$maybe_extra$Maybe_Extra_ops['?'] = F2(
 	function (mx, x) {
 		return A2(_elm_lang$core$Maybe$withDefault, x, mx);
 	});
-var _elm_lang$core$Color$fmod = F2(
-	function (f, n) {
-		var integer = _elm_lang$core$Basics$floor(f);
-		return (_elm_lang$core$Basics$toFloat(
-			A2(_elm_lang$core$Basics_ops['%'], integer, n)) + f) - _elm_lang$core$Basics$toFloat(integer);
-	});
-var _elm_lang$core$Color$rgbToHsl = F3(
-	function (red, green, blue) {
-		var b = _elm_lang$core$Basics$toFloat(blue) / 255;
-		var g = _elm_lang$core$Basics$toFloat(green) / 255;
-		var r = _elm_lang$core$Basics$toFloat(red) / 255;
-		var cMax = A2(
-			_elm_lang$core$Basics$max,
-			A2(_elm_lang$core$Basics$max, r, g),
-			b);
-		var cMin = A2(
-			_elm_lang$core$Basics$min,
-			A2(_elm_lang$core$Basics$min, r, g),
-			b);
-		var c = cMax - cMin;
-		var lightness = (cMax + cMin) / 2;
-		var saturation = _elm_lang$core$Native_Utils.eq(lightness, 0) ? 0 : (c / (1 - _elm_lang$core$Basics$abs((2 * lightness) - 1)));
-		var hue = _elm_lang$core$Basics$degrees(60) * (_elm_lang$core$Native_Utils.eq(cMax, r) ? A2(_elm_lang$core$Color$fmod, (g - b) / c, 6) : (_elm_lang$core$Native_Utils.eq(cMax, g) ? (((b - r) / c) + 2) : (((r - g) / c) + 4)));
-		return {ctor: '_Tuple3', _0: hue, _1: saturation, _2: lightness};
-	});
-var _elm_lang$core$Color$hslToRgb = F3(
-	function (hue, saturation, lightness) {
-		var normHue = hue / _elm_lang$core$Basics$degrees(60);
-		var chroma = (1 - _elm_lang$core$Basics$abs((2 * lightness) - 1)) * saturation;
-		var x = chroma * (1 - _elm_lang$core$Basics$abs(
-			A2(_elm_lang$core$Color$fmod, normHue, 2) - 1));
-		var _p0 = (_elm_lang$core$Native_Utils.cmp(normHue, 0) < 0) ? {ctor: '_Tuple3', _0: 0, _1: 0, _2: 0} : ((_elm_lang$core$Native_Utils.cmp(normHue, 1) < 0) ? {ctor: '_Tuple3', _0: chroma, _1: x, _2: 0} : ((_elm_lang$core$Native_Utils.cmp(normHue, 2) < 0) ? {ctor: '_Tuple3', _0: x, _1: chroma, _2: 0} : ((_elm_lang$core$Native_Utils.cmp(normHue, 3) < 0) ? {ctor: '_Tuple3', _0: 0, _1: chroma, _2: x} : ((_elm_lang$core$Native_Utils.cmp(normHue, 4) < 0) ? {ctor: '_Tuple3', _0: 0, _1: x, _2: chroma} : ((_elm_lang$core$Native_Utils.cmp(normHue, 5) < 0) ? {ctor: '_Tuple3', _0: x, _1: 0, _2: chroma} : ((_elm_lang$core$Native_Utils.cmp(normHue, 6) < 0) ? {ctor: '_Tuple3', _0: chroma, _1: 0, _2: x} : {ctor: '_Tuple3', _0: 0, _1: 0, _2: 0}))))));
-		var r = _p0._0;
-		var g = _p0._1;
-		var b = _p0._2;
-		var m = lightness - (chroma / 2);
-		return {ctor: '_Tuple3', _0: r + m, _1: g + m, _2: b + m};
-	});
-var _elm_lang$core$Color$toRgb = function (color) {
-	var _p1 = color;
-	if (_p1.ctor === 'RGBA') {
-		return {red: _p1._0, green: _p1._1, blue: _p1._2, alpha: _p1._3};
-	} else {
-		var _p2 = A3(_elm_lang$core$Color$hslToRgb, _p1._0, _p1._1, _p1._2);
-		var r = _p2._0;
-		var g = _p2._1;
-		var b = _p2._2;
-		return {
-			red: _elm_lang$core$Basics$round(255 * r),
-			green: _elm_lang$core$Basics$round(255 * g),
-			blue: _elm_lang$core$Basics$round(255 * b),
-			alpha: _p1._3
-		};
-	}
-};
-var _elm_lang$core$Color$toHsl = function (color) {
-	var _p3 = color;
-	if (_p3.ctor === 'HSLA') {
-		return {hue: _p3._0, saturation: _p3._1, lightness: _p3._2, alpha: _p3._3};
-	} else {
-		var _p4 = A3(_elm_lang$core$Color$rgbToHsl, _p3._0, _p3._1, _p3._2);
-		var h = _p4._0;
-		var s = _p4._1;
-		var l = _p4._2;
-		return {hue: h, saturation: s, lightness: l, alpha: _p3._3};
-	}
-};
-var _elm_lang$core$Color$HSLA = F4(
-	function (a, b, c, d) {
-		return {ctor: 'HSLA', _0: a, _1: b, _2: c, _3: d};
-	});
-var _elm_lang$core$Color$hsla = F4(
-	function (hue, saturation, lightness, alpha) {
-		return A4(
-			_elm_lang$core$Color$HSLA,
-			hue - _elm_lang$core$Basics$turns(
-				_elm_lang$core$Basics$toFloat(
-					_elm_lang$core$Basics$floor(hue / (2 * _elm_lang$core$Basics$pi)))),
-			saturation,
-			lightness,
-			alpha);
-	});
-var _elm_lang$core$Color$hsl = F3(
-	function (hue, saturation, lightness) {
-		return A4(_elm_lang$core$Color$hsla, hue, saturation, lightness, 1);
-	});
-var _elm_lang$core$Color$complement = function (color) {
-	var _p5 = color;
-	if (_p5.ctor === 'HSLA') {
-		return A4(
-			_elm_lang$core$Color$hsla,
-			_p5._0 + _elm_lang$core$Basics$degrees(180),
-			_p5._1,
-			_p5._2,
-			_p5._3);
-	} else {
-		var _p6 = A3(_elm_lang$core$Color$rgbToHsl, _p5._0, _p5._1, _p5._2);
-		var h = _p6._0;
-		var s = _p6._1;
-		var l = _p6._2;
-		return A4(
-			_elm_lang$core$Color$hsla,
-			h + _elm_lang$core$Basics$degrees(180),
-			s,
-			l,
-			_p5._3);
-	}
-};
-var _elm_lang$core$Color$grayscale = function (p) {
-	return A4(_elm_lang$core$Color$HSLA, 0, 0, 1 - p, 1);
-};
-var _elm_lang$core$Color$greyscale = function (p) {
-	return A4(_elm_lang$core$Color$HSLA, 0, 0, 1 - p, 1);
-};
-var _elm_lang$core$Color$RGBA = F4(
-	function (a, b, c, d) {
-		return {ctor: 'RGBA', _0: a, _1: b, _2: c, _3: d};
-	});
-var _elm_lang$core$Color$rgba = _elm_lang$core$Color$RGBA;
-var _elm_lang$core$Color$rgb = F3(
-	function (r, g, b) {
-		return A4(_elm_lang$core$Color$RGBA, r, g, b, 1);
-	});
-var _elm_lang$core$Color$lightRed = A4(_elm_lang$core$Color$RGBA, 239, 41, 41, 1);
-var _elm_lang$core$Color$red = A4(_elm_lang$core$Color$RGBA, 204, 0, 0, 1);
-var _elm_lang$core$Color$darkRed = A4(_elm_lang$core$Color$RGBA, 164, 0, 0, 1);
-var _elm_lang$core$Color$lightOrange = A4(_elm_lang$core$Color$RGBA, 252, 175, 62, 1);
-var _elm_lang$core$Color$orange = A4(_elm_lang$core$Color$RGBA, 245, 121, 0, 1);
-var _elm_lang$core$Color$darkOrange = A4(_elm_lang$core$Color$RGBA, 206, 92, 0, 1);
-var _elm_lang$core$Color$lightYellow = A4(_elm_lang$core$Color$RGBA, 255, 233, 79, 1);
-var _elm_lang$core$Color$yellow = A4(_elm_lang$core$Color$RGBA, 237, 212, 0, 1);
-var _elm_lang$core$Color$darkYellow = A4(_elm_lang$core$Color$RGBA, 196, 160, 0, 1);
-var _elm_lang$core$Color$lightGreen = A4(_elm_lang$core$Color$RGBA, 138, 226, 52, 1);
-var _elm_lang$core$Color$green = A4(_elm_lang$core$Color$RGBA, 115, 210, 22, 1);
-var _elm_lang$core$Color$darkGreen = A4(_elm_lang$core$Color$RGBA, 78, 154, 6, 1);
-var _elm_lang$core$Color$lightBlue = A4(_elm_lang$core$Color$RGBA, 114, 159, 207, 1);
-var _elm_lang$core$Color$blue = A4(_elm_lang$core$Color$RGBA, 52, 101, 164, 1);
-var _elm_lang$core$Color$darkBlue = A4(_elm_lang$core$Color$RGBA, 32, 74, 135, 1);
-var _elm_lang$core$Color$lightPurple = A4(_elm_lang$core$Color$RGBA, 173, 127, 168, 1);
-var _elm_lang$core$Color$purple = A4(_elm_lang$core$Color$RGBA, 117, 80, 123, 1);
-var _elm_lang$core$Color$darkPurple = A4(_elm_lang$core$Color$RGBA, 92, 53, 102, 1);
-var _elm_lang$core$Color$lightBrown = A4(_elm_lang$core$Color$RGBA, 233, 185, 110, 1);
-var _elm_lang$core$Color$brown = A4(_elm_lang$core$Color$RGBA, 193, 125, 17, 1);
-var _elm_lang$core$Color$darkBrown = A4(_elm_lang$core$Color$RGBA, 143, 89, 2, 1);
-var _elm_lang$core$Color$black = A4(_elm_lang$core$Color$RGBA, 0, 0, 0, 1);
-var _elm_lang$core$Color$white = A4(_elm_lang$core$Color$RGBA, 255, 255, 255, 1);
-var _elm_lang$core$Color$lightGrey = A4(_elm_lang$core$Color$RGBA, 238, 238, 236, 1);
-var _elm_lang$core$Color$grey = A4(_elm_lang$core$Color$RGBA, 211, 215, 207, 1);
-var _elm_lang$core$Color$darkGrey = A4(_elm_lang$core$Color$RGBA, 186, 189, 182, 1);
-var _elm_lang$core$Color$lightGray = A4(_elm_lang$core$Color$RGBA, 238, 238, 236, 1);
-var _elm_lang$core$Color$gray = A4(_elm_lang$core$Color$RGBA, 211, 215, 207, 1);
-var _elm_lang$core$Color$darkGray = A4(_elm_lang$core$Color$RGBA, 186, 189, 182, 1);
-var _elm_lang$core$Color$lightCharcoal = A4(_elm_lang$core$Color$RGBA, 136, 138, 133, 1);
-var _elm_lang$core$Color$charcoal = A4(_elm_lang$core$Color$RGBA, 85, 87, 83, 1);
-var _elm_lang$core$Color$darkCharcoal = A4(_elm_lang$core$Color$RGBA, 46, 52, 54, 1);
-var _elm_lang$core$Color$Radial = F5(
-	function (a, b, c, d, e) {
-		return {ctor: 'Radial', _0: a, _1: b, _2: c, _3: d, _4: e};
-	});
-var _elm_lang$core$Color$radial = _elm_lang$core$Color$Radial;
-var _elm_lang$core$Color$Linear = F3(
-	function (a, b, c) {
-		return {ctor: 'Linear', _0: a, _1: b, _2: c};
-	});
-var _elm_lang$core$Color$linear = _elm_lang$core$Color$Linear;
 var _elm_lang$core$Task$onError = _elm_lang$core$Native_Scheduler.onError;
 var _elm_lang$core$Task$andThen = _elm_lang$core$Native_Scheduler.andThen;
 var _elm_lang$core$Task$spawnCmd = F2(
@@ -5970,6 +5805,919 @@ var _elm_lang$core$Time$subMap = F2(
 			});
 	});
 _elm_lang$core$Native_Platform.effectManagers['Time'] = {pkg: 'elm-lang/core', init: _elm_lang$core$Time$init, onEffects: _elm_lang$core$Time$onEffects, onSelfMsg: _elm_lang$core$Time$onSelfMsg, tag: 'sub', subMap: _elm_lang$core$Time$subMap};
+var _elm_lang$core$Random$onSelfMsg = F3(
+	function (_p1, _p0, seed) {
+		return _elm_lang$core$Task$succeed(seed);
+	});
+var _elm_lang$core$Random$magicNum8 = 2147483562;
+var _elm_lang$core$Random$range = function (_p2) {
+	return {ctor: '_Tuple2', _0: 0, _1: _elm_lang$core$Random$magicNum8};
+};
+var _elm_lang$core$Random$magicNum7 = 2147483399;
+var _elm_lang$core$Random$magicNum6 = 2147483563;
+var _elm_lang$core$Random$magicNum5 = 3791;
+var _elm_lang$core$Random$magicNum4 = 40692;
+var _elm_lang$core$Random$magicNum3 = 52774;
+var _elm_lang$core$Random$magicNum2 = 12211;
+var _elm_lang$core$Random$magicNum1 = 53668;
+var _elm_lang$core$Random$magicNum0 = 40014;
+var _elm_lang$core$Random$step = F2(
+	function (_p3, seed) {
+		var _p4 = _p3;
+		return _p4._0(seed);
+	});
+var _elm_lang$core$Random$onEffects = F3(
+	function (router, commands, seed) {
+		var _p5 = commands;
+		if (_p5.ctor === '[]') {
+			return _elm_lang$core$Task$succeed(seed);
+		} else {
+			var _p6 = A2(_elm_lang$core$Random$step, _p5._0._0, seed);
+			var value = _p6._0;
+			var newSeed = _p6._1;
+			return A2(
+				_elm_lang$core$Task$andThen,
+				function (_p7) {
+					return A3(_elm_lang$core$Random$onEffects, router, _p5._1, newSeed);
+				},
+				A2(_elm_lang$core$Platform$sendToApp, router, value));
+		}
+	});
+var _elm_lang$core$Random$listHelp = F4(
+	function (list, n, generate, seed) {
+		listHelp:
+		while (true) {
+			if (_elm_lang$core$Native_Utils.cmp(n, 1) < 0) {
+				return {
+					ctor: '_Tuple2',
+					_0: _elm_lang$core$List$reverse(list),
+					_1: seed
+				};
+			} else {
+				var _p8 = generate(seed);
+				var value = _p8._0;
+				var newSeed = _p8._1;
+				var _v2 = {ctor: '::', _0: value, _1: list},
+					_v3 = n - 1,
+					_v4 = generate,
+					_v5 = newSeed;
+				list = _v2;
+				n = _v3;
+				generate = _v4;
+				seed = _v5;
+				continue listHelp;
+			}
+		}
+	});
+var _elm_lang$core$Random$minInt = -2147483648;
+var _elm_lang$core$Random$maxInt = 2147483647;
+var _elm_lang$core$Random$iLogBase = F2(
+	function (b, i) {
+		return (_elm_lang$core$Native_Utils.cmp(i, b) < 0) ? 1 : (1 + A2(_elm_lang$core$Random$iLogBase, b, (i / b) | 0));
+	});
+var _elm_lang$core$Random$command = _elm_lang$core$Native_Platform.leaf('Random');
+var _elm_lang$core$Random$Generator = function (a) {
+	return {ctor: 'Generator', _0: a};
+};
+var _elm_lang$core$Random$list = F2(
+	function (n, _p9) {
+		var _p10 = _p9;
+		return _elm_lang$core$Random$Generator(
+			function (seed) {
+				return A4(
+					_elm_lang$core$Random$listHelp,
+					{ctor: '[]'},
+					n,
+					_p10._0,
+					seed);
+			});
+	});
+var _elm_lang$core$Random$map = F2(
+	function (func, _p11) {
+		var _p12 = _p11;
+		return _elm_lang$core$Random$Generator(
+			function (seed0) {
+				var _p13 = _p12._0(seed0);
+				var a = _p13._0;
+				var seed1 = _p13._1;
+				return {
+					ctor: '_Tuple2',
+					_0: func(a),
+					_1: seed1
+				};
+			});
+	});
+var _elm_lang$core$Random$map2 = F3(
+	function (func, _p15, _p14) {
+		var _p16 = _p15;
+		var _p17 = _p14;
+		return _elm_lang$core$Random$Generator(
+			function (seed0) {
+				var _p18 = _p16._0(seed0);
+				var a = _p18._0;
+				var seed1 = _p18._1;
+				var _p19 = _p17._0(seed1);
+				var b = _p19._0;
+				var seed2 = _p19._1;
+				return {
+					ctor: '_Tuple2',
+					_0: A2(func, a, b),
+					_1: seed2
+				};
+			});
+	});
+var _elm_lang$core$Random$pair = F2(
+	function (genA, genB) {
+		return A3(
+			_elm_lang$core$Random$map2,
+			F2(
+				function (v0, v1) {
+					return {ctor: '_Tuple2', _0: v0, _1: v1};
+				}),
+			genA,
+			genB);
+	});
+var _elm_lang$core$Random$map3 = F4(
+	function (func, _p22, _p21, _p20) {
+		var _p23 = _p22;
+		var _p24 = _p21;
+		var _p25 = _p20;
+		return _elm_lang$core$Random$Generator(
+			function (seed0) {
+				var _p26 = _p23._0(seed0);
+				var a = _p26._0;
+				var seed1 = _p26._1;
+				var _p27 = _p24._0(seed1);
+				var b = _p27._0;
+				var seed2 = _p27._1;
+				var _p28 = _p25._0(seed2);
+				var c = _p28._0;
+				var seed3 = _p28._1;
+				return {
+					ctor: '_Tuple2',
+					_0: A3(func, a, b, c),
+					_1: seed3
+				};
+			});
+	});
+var _elm_lang$core$Random$map4 = F5(
+	function (func, _p32, _p31, _p30, _p29) {
+		var _p33 = _p32;
+		var _p34 = _p31;
+		var _p35 = _p30;
+		var _p36 = _p29;
+		return _elm_lang$core$Random$Generator(
+			function (seed0) {
+				var _p37 = _p33._0(seed0);
+				var a = _p37._0;
+				var seed1 = _p37._1;
+				var _p38 = _p34._0(seed1);
+				var b = _p38._0;
+				var seed2 = _p38._1;
+				var _p39 = _p35._0(seed2);
+				var c = _p39._0;
+				var seed3 = _p39._1;
+				var _p40 = _p36._0(seed3);
+				var d = _p40._0;
+				var seed4 = _p40._1;
+				return {
+					ctor: '_Tuple2',
+					_0: A4(func, a, b, c, d),
+					_1: seed4
+				};
+			});
+	});
+var _elm_lang$core$Random$map5 = F6(
+	function (func, _p45, _p44, _p43, _p42, _p41) {
+		var _p46 = _p45;
+		var _p47 = _p44;
+		var _p48 = _p43;
+		var _p49 = _p42;
+		var _p50 = _p41;
+		return _elm_lang$core$Random$Generator(
+			function (seed0) {
+				var _p51 = _p46._0(seed0);
+				var a = _p51._0;
+				var seed1 = _p51._1;
+				var _p52 = _p47._0(seed1);
+				var b = _p52._0;
+				var seed2 = _p52._1;
+				var _p53 = _p48._0(seed2);
+				var c = _p53._0;
+				var seed3 = _p53._1;
+				var _p54 = _p49._0(seed3);
+				var d = _p54._0;
+				var seed4 = _p54._1;
+				var _p55 = _p50._0(seed4);
+				var e = _p55._0;
+				var seed5 = _p55._1;
+				return {
+					ctor: '_Tuple2',
+					_0: A5(func, a, b, c, d, e),
+					_1: seed5
+				};
+			});
+	});
+var _elm_lang$core$Random$andThen = F2(
+	function (callback, _p56) {
+		var _p57 = _p56;
+		return _elm_lang$core$Random$Generator(
+			function (seed) {
+				var _p58 = _p57._0(seed);
+				var result = _p58._0;
+				var newSeed = _p58._1;
+				var _p59 = callback(result);
+				var genB = _p59._0;
+				return genB(newSeed);
+			});
+	});
+var _elm_lang$core$Random$State = F2(
+	function (a, b) {
+		return {ctor: 'State', _0: a, _1: b};
+	});
+var _elm_lang$core$Random$initState = function (seed) {
+	var s = A2(_elm_lang$core$Basics$max, seed, 0 - seed);
+	var q = (s / (_elm_lang$core$Random$magicNum6 - 1)) | 0;
+	var s2 = A2(_elm_lang$core$Basics_ops['%'], q, _elm_lang$core$Random$magicNum7 - 1);
+	var s1 = A2(_elm_lang$core$Basics_ops['%'], s, _elm_lang$core$Random$magicNum6 - 1);
+	return A2(_elm_lang$core$Random$State, s1 + 1, s2 + 1);
+};
+var _elm_lang$core$Random$next = function (_p60) {
+	var _p61 = _p60;
+	var _p63 = _p61._1;
+	var _p62 = _p61._0;
+	var k2 = (_p63 / _elm_lang$core$Random$magicNum3) | 0;
+	var rawState2 = (_elm_lang$core$Random$magicNum4 * (_p63 - (k2 * _elm_lang$core$Random$magicNum3))) - (k2 * _elm_lang$core$Random$magicNum5);
+	var newState2 = (_elm_lang$core$Native_Utils.cmp(rawState2, 0) < 0) ? (rawState2 + _elm_lang$core$Random$magicNum7) : rawState2;
+	var k1 = (_p62 / _elm_lang$core$Random$magicNum1) | 0;
+	var rawState1 = (_elm_lang$core$Random$magicNum0 * (_p62 - (k1 * _elm_lang$core$Random$magicNum1))) - (k1 * _elm_lang$core$Random$magicNum2);
+	var newState1 = (_elm_lang$core$Native_Utils.cmp(rawState1, 0) < 0) ? (rawState1 + _elm_lang$core$Random$magicNum6) : rawState1;
+	var z = newState1 - newState2;
+	var newZ = (_elm_lang$core$Native_Utils.cmp(z, 1) < 0) ? (z + _elm_lang$core$Random$magicNum8) : z;
+	return {
+		ctor: '_Tuple2',
+		_0: newZ,
+		_1: A2(_elm_lang$core$Random$State, newState1, newState2)
+	};
+};
+var _elm_lang$core$Random$split = function (_p64) {
+	var _p65 = _p64;
+	var _p68 = _p65._1;
+	var _p67 = _p65._0;
+	var _p66 = _elm_lang$core$Tuple$second(
+		_elm_lang$core$Random$next(_p65));
+	var t1 = _p66._0;
+	var t2 = _p66._1;
+	var new_s2 = _elm_lang$core$Native_Utils.eq(_p68, 1) ? (_elm_lang$core$Random$magicNum7 - 1) : (_p68 - 1);
+	var new_s1 = _elm_lang$core$Native_Utils.eq(_p67, _elm_lang$core$Random$magicNum6 - 1) ? 1 : (_p67 + 1);
+	return {
+		ctor: '_Tuple2',
+		_0: A2(_elm_lang$core$Random$State, new_s1, t2),
+		_1: A2(_elm_lang$core$Random$State, t1, new_s2)
+	};
+};
+var _elm_lang$core$Random$Seed = function (a) {
+	return {ctor: 'Seed', _0: a};
+};
+var _elm_lang$core$Random$int = F2(
+	function (a, b) {
+		return _elm_lang$core$Random$Generator(
+			function (_p69) {
+				var _p70 = _p69;
+				var _p75 = _p70._0;
+				var base = 2147483561;
+				var f = F3(
+					function (n, acc, state) {
+						f:
+						while (true) {
+							var _p71 = n;
+							if (_p71 === 0) {
+								return {ctor: '_Tuple2', _0: acc, _1: state};
+							} else {
+								var _p72 = _p75.next(state);
+								var x = _p72._0;
+								var nextState = _p72._1;
+								var _v27 = n - 1,
+									_v28 = x + (acc * base),
+									_v29 = nextState;
+								n = _v27;
+								acc = _v28;
+								state = _v29;
+								continue f;
+							}
+						}
+					});
+				var _p73 = (_elm_lang$core$Native_Utils.cmp(a, b) < 0) ? {ctor: '_Tuple2', _0: a, _1: b} : {ctor: '_Tuple2', _0: b, _1: a};
+				var lo = _p73._0;
+				var hi = _p73._1;
+				var k = (hi - lo) + 1;
+				var n = A2(_elm_lang$core$Random$iLogBase, base, k);
+				var _p74 = A3(f, n, 1, _p75.state);
+				var v = _p74._0;
+				var nextState = _p74._1;
+				return {
+					ctor: '_Tuple2',
+					_0: lo + A2(_elm_lang$core$Basics_ops['%'], v, k),
+					_1: _elm_lang$core$Random$Seed(
+						_elm_lang$core$Native_Utils.update(
+							_p75,
+							{state: nextState}))
+				};
+			});
+	});
+var _elm_lang$core$Random$bool = A2(
+	_elm_lang$core$Random$map,
+	F2(
+		function (x, y) {
+			return _elm_lang$core$Native_Utils.eq(x, y);
+		})(1),
+	A2(_elm_lang$core$Random$int, 0, 1));
+var _elm_lang$core$Random$float = F2(
+	function (a, b) {
+		return _elm_lang$core$Random$Generator(
+			function (seed) {
+				var _p76 = A2(
+					_elm_lang$core$Random$step,
+					A2(_elm_lang$core$Random$int, _elm_lang$core$Random$minInt, _elm_lang$core$Random$maxInt),
+					seed);
+				var number = _p76._0;
+				var newSeed = _p76._1;
+				var negativeOneToOne = _elm_lang$core$Basics$toFloat(number) / _elm_lang$core$Basics$toFloat(_elm_lang$core$Random$maxInt - _elm_lang$core$Random$minInt);
+				var _p77 = (_elm_lang$core$Native_Utils.cmp(a, b) < 0) ? {ctor: '_Tuple2', _0: a, _1: b} : {ctor: '_Tuple2', _0: b, _1: a};
+				var lo = _p77._0;
+				var hi = _p77._1;
+				var scaled = ((lo + hi) / 2) + ((hi - lo) * negativeOneToOne);
+				return {ctor: '_Tuple2', _0: scaled, _1: newSeed};
+			});
+	});
+var _elm_lang$core$Random$initialSeed = function (n) {
+	return _elm_lang$core$Random$Seed(
+		{
+			state: _elm_lang$core$Random$initState(n),
+			next: _elm_lang$core$Random$next,
+			split: _elm_lang$core$Random$split,
+			range: _elm_lang$core$Random$range
+		});
+};
+var _elm_lang$core$Random$init = A2(
+	_elm_lang$core$Task$andThen,
+	function (t) {
+		return _elm_lang$core$Task$succeed(
+			_elm_lang$core$Random$initialSeed(
+				_elm_lang$core$Basics$round(t)));
+	},
+	_elm_lang$core$Time$now);
+var _elm_lang$core$Random$Generate = function (a) {
+	return {ctor: 'Generate', _0: a};
+};
+var _elm_lang$core$Random$generate = F2(
+	function (tagger, generator) {
+		return _elm_lang$core$Random$command(
+			_elm_lang$core$Random$Generate(
+				A2(_elm_lang$core$Random$map, tagger, generator)));
+	});
+var _elm_lang$core$Random$cmdMap = F2(
+	function (func, _p78) {
+		var _p79 = _p78;
+		return _elm_lang$core$Random$Generate(
+			A2(_elm_lang$core$Random$map, func, _p79._0));
+	});
+_elm_lang$core$Native_Platform.effectManagers['Random'] = {pkg: 'elm-lang/core', init: _elm_lang$core$Random$init, onEffects: _elm_lang$core$Random$onEffects, onSelfMsg: _elm_lang$core$Random$onSelfMsg, tag: 'cmd', cmdMap: _elm_lang$core$Random$cmdMap};
+var _elm_community$random_extra$Random_Extra$andThen6 = F7(
+	function (constructor, generatorA, generatorB, generatorC, generatorD, generatorE, generatorF) {
+		return A2(
+			_elm_lang$core$Random$andThen,
+			function (a) {
+				return A2(
+					_elm_lang$core$Random$andThen,
+					function (b) {
+						return A2(
+							_elm_lang$core$Random$andThen,
+							function (c) {
+								return A2(
+									_elm_lang$core$Random$andThen,
+									function (d) {
+										return A2(
+											_elm_lang$core$Random$andThen,
+											function (e) {
+												return A2(
+													_elm_lang$core$Random$andThen,
+													function (f) {
+														return A6(constructor, a, b, c, d, e, f);
+													},
+													generatorF);
+											},
+											generatorE);
+									},
+									generatorD);
+							},
+							generatorC);
+					},
+					generatorB);
+			},
+			generatorA);
+	});
+var _elm_community$random_extra$Random_Extra$andThen5 = F6(
+	function (constructor, generatorA, generatorB, generatorC, generatorD, generatorE) {
+		return A2(
+			_elm_lang$core$Random$andThen,
+			function (a) {
+				return A2(
+					_elm_lang$core$Random$andThen,
+					function (b) {
+						return A2(
+							_elm_lang$core$Random$andThen,
+							function (c) {
+								return A2(
+									_elm_lang$core$Random$andThen,
+									function (d) {
+										return A2(
+											_elm_lang$core$Random$andThen,
+											function (e) {
+												return A5(constructor, a, b, c, d, e);
+											},
+											generatorE);
+									},
+									generatorD);
+							},
+							generatorC);
+					},
+					generatorB);
+			},
+			generatorA);
+	});
+var _elm_community$random_extra$Random_Extra$andThen4 = F5(
+	function (constructor, generatorA, generatorB, generatorC, generatorD) {
+		return A2(
+			_elm_lang$core$Random$andThen,
+			function (a) {
+				return A2(
+					_elm_lang$core$Random$andThen,
+					function (b) {
+						return A2(
+							_elm_lang$core$Random$andThen,
+							function (c) {
+								return A2(
+									_elm_lang$core$Random$andThen,
+									function (d) {
+										return A4(constructor, a, b, c, d);
+									},
+									generatorD);
+							},
+							generatorC);
+					},
+					generatorB);
+			},
+			generatorA);
+	});
+var _elm_community$random_extra$Random_Extra$andThen3 = F4(
+	function (constructor, generatorA, generatorB, generatorC) {
+		return A2(
+			_elm_lang$core$Random$andThen,
+			function (a) {
+				return A2(
+					_elm_lang$core$Random$andThen,
+					function (b) {
+						return A2(
+							_elm_lang$core$Random$andThen,
+							function (c) {
+								return A3(constructor, a, b, c);
+							},
+							generatorC);
+					},
+					generatorB);
+			},
+			generatorA);
+	});
+var _elm_community$random_extra$Random_Extra$andThen2 = F3(
+	function (constructor, generatorA, generatorB) {
+		return A2(
+			_elm_lang$core$Random$andThen,
+			function (a) {
+				return A2(
+					_elm_lang$core$Random$andThen,
+					function (b) {
+						return A2(constructor, a, b);
+					},
+					generatorB);
+			},
+			generatorA);
+	});
+var _elm_community$random_extra$Random_Extra$rangeLengthList = F3(
+	function (minLength, maxLength, generator) {
+		return A2(
+			_elm_lang$core$Random$andThen,
+			function (len) {
+				return A2(_elm_lang$core$Random$list, len, generator);
+			},
+			A2(_elm_lang$core$Random$int, minLength, maxLength));
+	});
+var _elm_community$random_extra$Random_Extra$result = F3(
+	function (genBool, genErr, genVal) {
+		return A2(
+			_elm_lang$core$Random$andThen,
+			function (b) {
+				return b ? A2(_elm_lang$core$Random$map, _elm_lang$core$Result$Ok, genVal) : A2(_elm_lang$core$Random$map, _elm_lang$core$Result$Err, genErr);
+			},
+			genBool);
+	});
+var _elm_community$random_extra$Random_Extra$sample = function () {
+	var find = F2(
+		function (k, ys) {
+			find:
+			while (true) {
+				var _p0 = ys;
+				if (_p0.ctor === '[]') {
+					return _elm_lang$core$Maybe$Nothing;
+				} else {
+					if (_elm_lang$core$Native_Utils.eq(k, 0)) {
+						return _elm_lang$core$Maybe$Just(_p0._0);
+					} else {
+						var _v1 = k - 1,
+							_v2 = _p0._1;
+						k = _v1;
+						ys = _v2;
+						continue find;
+					}
+				}
+			}
+		});
+	return function (xs) {
+		return A2(
+			_elm_lang$core$Random$map,
+			function (i) {
+				return A2(find, i, xs);
+			},
+			A2(
+				_elm_lang$core$Random$int,
+				0,
+				_elm_lang$core$List$length(xs) - 1));
+	};
+}();
+var _elm_community$random_extra$Random_Extra$frequency = function (pairs) {
+	var pick = F2(
+		function (choices, n) {
+			pick:
+			while (true) {
+				var _p1 = choices;
+				if ((_p1.ctor === '::') && (_p1._0.ctor === '_Tuple2')) {
+					var _p2 = _p1._0._0;
+					if (_elm_lang$core$Native_Utils.cmp(n, _p2) < 1) {
+						return _p1._0._1;
+					} else {
+						var _v4 = _p1._1,
+							_v5 = n - _p2;
+						choices = _v4;
+						n = _v5;
+						continue pick;
+					}
+				} else {
+					return _elm_lang$core$Native_Utils.crashCase(
+						'Random.Extra',
+						{
+							start: {line: 154, column: 13},
+							end: {line: 162, column: 79}
+						},
+						_p1)('Empty list passed to Random.Extra.frequency!');
+				}
+			}
+		});
+	var total = _elm_lang$core$List$sum(
+		A2(
+			_elm_lang$core$List$map,
+			function (_p4) {
+				return _elm_lang$core$Basics$abs(
+					_elm_lang$core$Tuple$first(_p4));
+			},
+			pairs));
+	return A2(
+		_elm_lang$core$Random$andThen,
+		pick(pairs),
+		A2(_elm_lang$core$Random$float, 0, total));
+};
+var _elm_community$random_extra$Random_Extra$choices = function (gens) {
+	return _elm_community$random_extra$Random_Extra$frequency(
+		A2(
+			_elm_lang$core$List$map,
+			function (g) {
+				return {ctor: '_Tuple2', _0: 1, _1: g};
+			},
+			gens));
+};
+var _elm_community$random_extra$Random_Extra$choice = F2(
+	function (x, y) {
+		return A2(
+			_elm_lang$core$Random$map,
+			function (b) {
+				return b ? x : y;
+			},
+			_elm_lang$core$Random$bool);
+	});
+var _elm_community$random_extra$Random_Extra$oneIn = function (n) {
+	return A2(
+		_elm_lang$core$Random$map,
+		F2(
+			function (x, y) {
+				return _elm_lang$core$Native_Utils.eq(x, y);
+			})(1),
+		A2(_elm_lang$core$Random$int, 1, n));
+};
+var _elm_community$random_extra$Random_Extra$andMap = F2(
+	function (generator, funcGenerator) {
+		return A3(
+			_elm_lang$core$Random$map2,
+			F2(
+				function (x, y) {
+					return x(y);
+				}),
+			funcGenerator,
+			generator);
+	});
+var _elm_community$random_extra$Random_Extra$map6 = F7(
+	function (f, generatorA, generatorB, generatorC, generatorD, generatorE, generatorF) {
+		return A2(
+			_elm_community$random_extra$Random_Extra$andMap,
+			generatorF,
+			A6(_elm_lang$core$Random$map5, f, generatorA, generatorB, generatorC, generatorD, generatorE));
+	});
+var _elm_community$random_extra$Random_Extra$constant = function (value) {
+	return A2(
+		_elm_lang$core$Random$map,
+		function (_p5) {
+			return value;
+		},
+		_elm_lang$core$Random$bool);
+};
+var _elm_community$random_extra$Random_Extra$filter = F2(
+	function (predicate, generator) {
+		return A2(
+			_elm_lang$core$Random$andThen,
+			function (a) {
+				return predicate(a) ? _elm_community$random_extra$Random_Extra$constant(a) : A2(_elm_community$random_extra$Random_Extra$filter, predicate, generator);
+			},
+			generator);
+	});
+var _elm_community$random_extra$Random_Extra$combine = function (generators) {
+	var _p6 = generators;
+	if (_p6.ctor === '[]') {
+		return _elm_community$random_extra$Random_Extra$constant(
+			{ctor: '[]'});
+	} else {
+		return A3(
+			_elm_lang$core$Random$map2,
+			F2(
+				function (x, y) {
+					return {ctor: '::', _0: x, _1: y};
+				}),
+			_p6._0,
+			_elm_community$random_extra$Random_Extra$combine(_p6._1));
+	}
+};
+var _elm_community$random_extra$Random_Extra$maybe = F2(
+	function (genBool, genA) {
+		return A2(
+			_elm_lang$core$Random$andThen,
+			function (b) {
+				return b ? A2(_elm_lang$core$Random$map, _elm_lang$core$Maybe$Just, genA) : _elm_community$random_extra$Random_Extra$constant(_elm_lang$core$Maybe$Nothing);
+			},
+			genBool);
+	});
+var _elm_lang$core$Color$fmod = F2(
+	function (f, n) {
+		var integer = _elm_lang$core$Basics$floor(f);
+		return (_elm_lang$core$Basics$toFloat(
+			A2(_elm_lang$core$Basics_ops['%'], integer, n)) + f) - _elm_lang$core$Basics$toFloat(integer);
+	});
+var _elm_lang$core$Color$rgbToHsl = F3(
+	function (red, green, blue) {
+		var b = _elm_lang$core$Basics$toFloat(blue) / 255;
+		var g = _elm_lang$core$Basics$toFloat(green) / 255;
+		var r = _elm_lang$core$Basics$toFloat(red) / 255;
+		var cMax = A2(
+			_elm_lang$core$Basics$max,
+			A2(_elm_lang$core$Basics$max, r, g),
+			b);
+		var cMin = A2(
+			_elm_lang$core$Basics$min,
+			A2(_elm_lang$core$Basics$min, r, g),
+			b);
+		var c = cMax - cMin;
+		var lightness = (cMax + cMin) / 2;
+		var saturation = _elm_lang$core$Native_Utils.eq(lightness, 0) ? 0 : (c / (1 - _elm_lang$core$Basics$abs((2 * lightness) - 1)));
+		var hue = _elm_lang$core$Basics$degrees(60) * (_elm_lang$core$Native_Utils.eq(cMax, r) ? A2(_elm_lang$core$Color$fmod, (g - b) / c, 6) : (_elm_lang$core$Native_Utils.eq(cMax, g) ? (((b - r) / c) + 2) : (((r - g) / c) + 4)));
+		return {ctor: '_Tuple3', _0: hue, _1: saturation, _2: lightness};
+	});
+var _elm_lang$core$Color$hslToRgb = F3(
+	function (hue, saturation, lightness) {
+		var normHue = hue / _elm_lang$core$Basics$degrees(60);
+		var chroma = (1 - _elm_lang$core$Basics$abs((2 * lightness) - 1)) * saturation;
+		var x = chroma * (1 - _elm_lang$core$Basics$abs(
+			A2(_elm_lang$core$Color$fmod, normHue, 2) - 1));
+		var _p0 = (_elm_lang$core$Native_Utils.cmp(normHue, 0) < 0) ? {ctor: '_Tuple3', _0: 0, _1: 0, _2: 0} : ((_elm_lang$core$Native_Utils.cmp(normHue, 1) < 0) ? {ctor: '_Tuple3', _0: chroma, _1: x, _2: 0} : ((_elm_lang$core$Native_Utils.cmp(normHue, 2) < 0) ? {ctor: '_Tuple3', _0: x, _1: chroma, _2: 0} : ((_elm_lang$core$Native_Utils.cmp(normHue, 3) < 0) ? {ctor: '_Tuple3', _0: 0, _1: chroma, _2: x} : ((_elm_lang$core$Native_Utils.cmp(normHue, 4) < 0) ? {ctor: '_Tuple3', _0: 0, _1: x, _2: chroma} : ((_elm_lang$core$Native_Utils.cmp(normHue, 5) < 0) ? {ctor: '_Tuple3', _0: x, _1: 0, _2: chroma} : ((_elm_lang$core$Native_Utils.cmp(normHue, 6) < 0) ? {ctor: '_Tuple3', _0: chroma, _1: 0, _2: x} : {ctor: '_Tuple3', _0: 0, _1: 0, _2: 0}))))));
+		var r = _p0._0;
+		var g = _p0._1;
+		var b = _p0._2;
+		var m = lightness - (chroma / 2);
+		return {ctor: '_Tuple3', _0: r + m, _1: g + m, _2: b + m};
+	});
+var _elm_lang$core$Color$toRgb = function (color) {
+	var _p1 = color;
+	if (_p1.ctor === 'RGBA') {
+		return {red: _p1._0, green: _p1._1, blue: _p1._2, alpha: _p1._3};
+	} else {
+		var _p2 = A3(_elm_lang$core$Color$hslToRgb, _p1._0, _p1._1, _p1._2);
+		var r = _p2._0;
+		var g = _p2._1;
+		var b = _p2._2;
+		return {
+			red: _elm_lang$core$Basics$round(255 * r),
+			green: _elm_lang$core$Basics$round(255 * g),
+			blue: _elm_lang$core$Basics$round(255 * b),
+			alpha: _p1._3
+		};
+	}
+};
+var _elm_lang$core$Color$toHsl = function (color) {
+	var _p3 = color;
+	if (_p3.ctor === 'HSLA') {
+		return {hue: _p3._0, saturation: _p3._1, lightness: _p3._2, alpha: _p3._3};
+	} else {
+		var _p4 = A3(_elm_lang$core$Color$rgbToHsl, _p3._0, _p3._1, _p3._2);
+		var h = _p4._0;
+		var s = _p4._1;
+		var l = _p4._2;
+		return {hue: h, saturation: s, lightness: l, alpha: _p3._3};
+	}
+};
+var _elm_lang$core$Color$HSLA = F4(
+	function (a, b, c, d) {
+		return {ctor: 'HSLA', _0: a, _1: b, _2: c, _3: d};
+	});
+var _elm_lang$core$Color$hsla = F4(
+	function (hue, saturation, lightness, alpha) {
+		return A4(
+			_elm_lang$core$Color$HSLA,
+			hue - _elm_lang$core$Basics$turns(
+				_elm_lang$core$Basics$toFloat(
+					_elm_lang$core$Basics$floor(hue / (2 * _elm_lang$core$Basics$pi)))),
+			saturation,
+			lightness,
+			alpha);
+	});
+var _elm_lang$core$Color$hsl = F3(
+	function (hue, saturation, lightness) {
+		return A4(_elm_lang$core$Color$hsla, hue, saturation, lightness, 1);
+	});
+var _elm_lang$core$Color$complement = function (color) {
+	var _p5 = color;
+	if (_p5.ctor === 'HSLA') {
+		return A4(
+			_elm_lang$core$Color$hsla,
+			_p5._0 + _elm_lang$core$Basics$degrees(180),
+			_p5._1,
+			_p5._2,
+			_p5._3);
+	} else {
+		var _p6 = A3(_elm_lang$core$Color$rgbToHsl, _p5._0, _p5._1, _p5._2);
+		var h = _p6._0;
+		var s = _p6._1;
+		var l = _p6._2;
+		return A4(
+			_elm_lang$core$Color$hsla,
+			h + _elm_lang$core$Basics$degrees(180),
+			s,
+			l,
+			_p5._3);
+	}
+};
+var _elm_lang$core$Color$grayscale = function (p) {
+	return A4(_elm_lang$core$Color$HSLA, 0, 0, 1 - p, 1);
+};
+var _elm_lang$core$Color$greyscale = function (p) {
+	return A4(_elm_lang$core$Color$HSLA, 0, 0, 1 - p, 1);
+};
+var _elm_lang$core$Color$RGBA = F4(
+	function (a, b, c, d) {
+		return {ctor: 'RGBA', _0: a, _1: b, _2: c, _3: d};
+	});
+var _elm_lang$core$Color$rgba = _elm_lang$core$Color$RGBA;
+var _elm_lang$core$Color$rgb = F3(
+	function (r, g, b) {
+		return A4(_elm_lang$core$Color$RGBA, r, g, b, 1);
+	});
+var _elm_lang$core$Color$lightRed = A4(_elm_lang$core$Color$RGBA, 239, 41, 41, 1);
+var _elm_lang$core$Color$red = A4(_elm_lang$core$Color$RGBA, 204, 0, 0, 1);
+var _elm_lang$core$Color$darkRed = A4(_elm_lang$core$Color$RGBA, 164, 0, 0, 1);
+var _elm_lang$core$Color$lightOrange = A4(_elm_lang$core$Color$RGBA, 252, 175, 62, 1);
+var _elm_lang$core$Color$orange = A4(_elm_lang$core$Color$RGBA, 245, 121, 0, 1);
+var _elm_lang$core$Color$darkOrange = A4(_elm_lang$core$Color$RGBA, 206, 92, 0, 1);
+var _elm_lang$core$Color$lightYellow = A4(_elm_lang$core$Color$RGBA, 255, 233, 79, 1);
+var _elm_lang$core$Color$yellow = A4(_elm_lang$core$Color$RGBA, 237, 212, 0, 1);
+var _elm_lang$core$Color$darkYellow = A4(_elm_lang$core$Color$RGBA, 196, 160, 0, 1);
+var _elm_lang$core$Color$lightGreen = A4(_elm_lang$core$Color$RGBA, 138, 226, 52, 1);
+var _elm_lang$core$Color$green = A4(_elm_lang$core$Color$RGBA, 115, 210, 22, 1);
+var _elm_lang$core$Color$darkGreen = A4(_elm_lang$core$Color$RGBA, 78, 154, 6, 1);
+var _elm_lang$core$Color$lightBlue = A4(_elm_lang$core$Color$RGBA, 114, 159, 207, 1);
+var _elm_lang$core$Color$blue = A4(_elm_lang$core$Color$RGBA, 52, 101, 164, 1);
+var _elm_lang$core$Color$darkBlue = A4(_elm_lang$core$Color$RGBA, 32, 74, 135, 1);
+var _elm_lang$core$Color$lightPurple = A4(_elm_lang$core$Color$RGBA, 173, 127, 168, 1);
+var _elm_lang$core$Color$purple = A4(_elm_lang$core$Color$RGBA, 117, 80, 123, 1);
+var _elm_lang$core$Color$darkPurple = A4(_elm_lang$core$Color$RGBA, 92, 53, 102, 1);
+var _elm_lang$core$Color$lightBrown = A4(_elm_lang$core$Color$RGBA, 233, 185, 110, 1);
+var _elm_lang$core$Color$brown = A4(_elm_lang$core$Color$RGBA, 193, 125, 17, 1);
+var _elm_lang$core$Color$darkBrown = A4(_elm_lang$core$Color$RGBA, 143, 89, 2, 1);
+var _elm_lang$core$Color$black = A4(_elm_lang$core$Color$RGBA, 0, 0, 0, 1);
+var _elm_lang$core$Color$white = A4(_elm_lang$core$Color$RGBA, 255, 255, 255, 1);
+var _elm_lang$core$Color$lightGrey = A4(_elm_lang$core$Color$RGBA, 238, 238, 236, 1);
+var _elm_lang$core$Color$grey = A4(_elm_lang$core$Color$RGBA, 211, 215, 207, 1);
+var _elm_lang$core$Color$darkGrey = A4(_elm_lang$core$Color$RGBA, 186, 189, 182, 1);
+var _elm_lang$core$Color$lightGray = A4(_elm_lang$core$Color$RGBA, 238, 238, 236, 1);
+var _elm_lang$core$Color$gray = A4(_elm_lang$core$Color$RGBA, 211, 215, 207, 1);
+var _elm_lang$core$Color$darkGray = A4(_elm_lang$core$Color$RGBA, 186, 189, 182, 1);
+var _elm_lang$core$Color$lightCharcoal = A4(_elm_lang$core$Color$RGBA, 136, 138, 133, 1);
+var _elm_lang$core$Color$charcoal = A4(_elm_lang$core$Color$RGBA, 85, 87, 83, 1);
+var _elm_lang$core$Color$darkCharcoal = A4(_elm_lang$core$Color$RGBA, 46, 52, 54, 1);
+var _elm_lang$core$Color$Radial = F5(
+	function (a, b, c, d, e) {
+		return {ctor: 'Radial', _0: a, _1: b, _2: c, _3: d, _4: e};
+	});
+var _elm_lang$core$Color$radial = _elm_lang$core$Color$Radial;
+var _elm_lang$core$Color$Linear = F3(
+	function (a, b, c) {
+		return {ctor: 'Linear', _0: a, _1: b, _2: c};
+	});
+var _elm_lang$core$Color$linear = _elm_lang$core$Color$Linear;
+var _elm_community$random_extra$Random_List$get = F2(
+	function (index, list) {
+		return _elm_lang$core$List$head(
+			A2(_elm_lang$core$List$drop, index, list));
+	});
+var _elm_community$random_extra$Random_List$choose = function (list) {
+	if (_elm_lang$core$List$isEmpty(list)) {
+		return _elm_community$random_extra$Random_Extra$constant(
+			{ctor: '_Tuple2', _0: _elm_lang$core$Maybe$Nothing, _1: list});
+	} else {
+		var back = function (i) {
+			return A2(_elm_lang$core$List$drop, i + 1, list);
+		};
+		var front = function (i) {
+			return A2(_elm_lang$core$List$take, i, list);
+		};
+		var lastIndex = _elm_lang$core$List$length(list) - 1;
+		var gen = A2(_elm_lang$core$Random$int, 0, lastIndex);
+		return A2(
+			_elm_lang$core$Random$map,
+			function (index) {
+				return {
+					ctor: '_Tuple2',
+					_0: A2(_elm_community$random_extra$Random_List$get, index, list),
+					_1: A2(
+						_elm_lang$core$List$append,
+						front(index),
+						back(index))
+				};
+			},
+			gen);
+	}
+};
+var _elm_community$random_extra$Random_List$shuffle = function (list) {
+	if (_elm_lang$core$List$isEmpty(list)) {
+		return _elm_community$random_extra$Random_Extra$constant(list);
+	} else {
+		var helper = function (_p0) {
+			var _p1 = _p0;
+			var _p6 = _p1._0;
+			return A2(
+				_elm_lang$core$Random$andThen,
+				function (_p2) {
+					var _p3 = _p2;
+					var _p5 = _p3._1;
+					var _p4 = _p3._0;
+					if (_p4.ctor === 'Nothing') {
+						return _elm_community$random_extra$Random_Extra$constant(
+							{ctor: '_Tuple2', _0: _p6, _1: _p5});
+					} else {
+						return helper(
+							{
+								ctor: '_Tuple2',
+								_0: {ctor: '::', _0: _p4._0, _1: _p6},
+								_1: _p5
+							});
+					}
+				},
+				_elm_community$random_extra$Random_List$choose(_p1._1));
+		};
+		return A2(
+			_elm_lang$core$Random$map,
+			_elm_lang$core$Tuple$first,
+			helper(
+				{
+					ctor: '_Tuple2',
+					_0: {ctor: '[]'},
+					_1: list
+				}));
+	}
+};
 //import Maybe, Native.Array, Native.List, Native.Utils, Result //
 
 var _elm_lang$core$Native_Json = function() {
@@ -6736,384 +7484,6 @@ return {
 };
 
 }();
-var _elm_lang$core$Random$onSelfMsg = F3(
-	function (_p1, _p0, seed) {
-		return _elm_lang$core$Task$succeed(seed);
-	});
-var _elm_lang$core$Random$magicNum8 = 2147483562;
-var _elm_lang$core$Random$range = function (_p2) {
-	return {ctor: '_Tuple2', _0: 0, _1: _elm_lang$core$Random$magicNum8};
-};
-var _elm_lang$core$Random$magicNum7 = 2147483399;
-var _elm_lang$core$Random$magicNum6 = 2147483563;
-var _elm_lang$core$Random$magicNum5 = 3791;
-var _elm_lang$core$Random$magicNum4 = 40692;
-var _elm_lang$core$Random$magicNum3 = 52774;
-var _elm_lang$core$Random$magicNum2 = 12211;
-var _elm_lang$core$Random$magicNum1 = 53668;
-var _elm_lang$core$Random$magicNum0 = 40014;
-var _elm_lang$core$Random$step = F2(
-	function (_p3, seed) {
-		var _p4 = _p3;
-		return _p4._0(seed);
-	});
-var _elm_lang$core$Random$onEffects = F3(
-	function (router, commands, seed) {
-		var _p5 = commands;
-		if (_p5.ctor === '[]') {
-			return _elm_lang$core$Task$succeed(seed);
-		} else {
-			var _p6 = A2(_elm_lang$core$Random$step, _p5._0._0, seed);
-			var value = _p6._0;
-			var newSeed = _p6._1;
-			return A2(
-				_elm_lang$core$Task$andThen,
-				function (_p7) {
-					return A3(_elm_lang$core$Random$onEffects, router, _p5._1, newSeed);
-				},
-				A2(_elm_lang$core$Platform$sendToApp, router, value));
-		}
-	});
-var _elm_lang$core$Random$listHelp = F4(
-	function (list, n, generate, seed) {
-		listHelp:
-		while (true) {
-			if (_elm_lang$core$Native_Utils.cmp(n, 1) < 0) {
-				return {
-					ctor: '_Tuple2',
-					_0: _elm_lang$core$List$reverse(list),
-					_1: seed
-				};
-			} else {
-				var _p8 = generate(seed);
-				var value = _p8._0;
-				var newSeed = _p8._1;
-				var _v2 = {ctor: '::', _0: value, _1: list},
-					_v3 = n - 1,
-					_v4 = generate,
-					_v5 = newSeed;
-				list = _v2;
-				n = _v3;
-				generate = _v4;
-				seed = _v5;
-				continue listHelp;
-			}
-		}
-	});
-var _elm_lang$core$Random$minInt = -2147483648;
-var _elm_lang$core$Random$maxInt = 2147483647;
-var _elm_lang$core$Random$iLogBase = F2(
-	function (b, i) {
-		return (_elm_lang$core$Native_Utils.cmp(i, b) < 0) ? 1 : (1 + A2(_elm_lang$core$Random$iLogBase, b, (i / b) | 0));
-	});
-var _elm_lang$core$Random$command = _elm_lang$core$Native_Platform.leaf('Random');
-var _elm_lang$core$Random$Generator = function (a) {
-	return {ctor: 'Generator', _0: a};
-};
-var _elm_lang$core$Random$list = F2(
-	function (n, _p9) {
-		var _p10 = _p9;
-		return _elm_lang$core$Random$Generator(
-			function (seed) {
-				return A4(
-					_elm_lang$core$Random$listHelp,
-					{ctor: '[]'},
-					n,
-					_p10._0,
-					seed);
-			});
-	});
-var _elm_lang$core$Random$map = F2(
-	function (func, _p11) {
-		var _p12 = _p11;
-		return _elm_lang$core$Random$Generator(
-			function (seed0) {
-				var _p13 = _p12._0(seed0);
-				var a = _p13._0;
-				var seed1 = _p13._1;
-				return {
-					ctor: '_Tuple2',
-					_0: func(a),
-					_1: seed1
-				};
-			});
-	});
-var _elm_lang$core$Random$map2 = F3(
-	function (func, _p15, _p14) {
-		var _p16 = _p15;
-		var _p17 = _p14;
-		return _elm_lang$core$Random$Generator(
-			function (seed0) {
-				var _p18 = _p16._0(seed0);
-				var a = _p18._0;
-				var seed1 = _p18._1;
-				var _p19 = _p17._0(seed1);
-				var b = _p19._0;
-				var seed2 = _p19._1;
-				return {
-					ctor: '_Tuple2',
-					_0: A2(func, a, b),
-					_1: seed2
-				};
-			});
-	});
-var _elm_lang$core$Random$pair = F2(
-	function (genA, genB) {
-		return A3(
-			_elm_lang$core$Random$map2,
-			F2(
-				function (v0, v1) {
-					return {ctor: '_Tuple2', _0: v0, _1: v1};
-				}),
-			genA,
-			genB);
-	});
-var _elm_lang$core$Random$map3 = F4(
-	function (func, _p22, _p21, _p20) {
-		var _p23 = _p22;
-		var _p24 = _p21;
-		var _p25 = _p20;
-		return _elm_lang$core$Random$Generator(
-			function (seed0) {
-				var _p26 = _p23._0(seed0);
-				var a = _p26._0;
-				var seed1 = _p26._1;
-				var _p27 = _p24._0(seed1);
-				var b = _p27._0;
-				var seed2 = _p27._1;
-				var _p28 = _p25._0(seed2);
-				var c = _p28._0;
-				var seed3 = _p28._1;
-				return {
-					ctor: '_Tuple2',
-					_0: A3(func, a, b, c),
-					_1: seed3
-				};
-			});
-	});
-var _elm_lang$core$Random$map4 = F5(
-	function (func, _p32, _p31, _p30, _p29) {
-		var _p33 = _p32;
-		var _p34 = _p31;
-		var _p35 = _p30;
-		var _p36 = _p29;
-		return _elm_lang$core$Random$Generator(
-			function (seed0) {
-				var _p37 = _p33._0(seed0);
-				var a = _p37._0;
-				var seed1 = _p37._1;
-				var _p38 = _p34._0(seed1);
-				var b = _p38._0;
-				var seed2 = _p38._1;
-				var _p39 = _p35._0(seed2);
-				var c = _p39._0;
-				var seed3 = _p39._1;
-				var _p40 = _p36._0(seed3);
-				var d = _p40._0;
-				var seed4 = _p40._1;
-				return {
-					ctor: '_Tuple2',
-					_0: A4(func, a, b, c, d),
-					_1: seed4
-				};
-			});
-	});
-var _elm_lang$core$Random$map5 = F6(
-	function (func, _p45, _p44, _p43, _p42, _p41) {
-		var _p46 = _p45;
-		var _p47 = _p44;
-		var _p48 = _p43;
-		var _p49 = _p42;
-		var _p50 = _p41;
-		return _elm_lang$core$Random$Generator(
-			function (seed0) {
-				var _p51 = _p46._0(seed0);
-				var a = _p51._0;
-				var seed1 = _p51._1;
-				var _p52 = _p47._0(seed1);
-				var b = _p52._0;
-				var seed2 = _p52._1;
-				var _p53 = _p48._0(seed2);
-				var c = _p53._0;
-				var seed3 = _p53._1;
-				var _p54 = _p49._0(seed3);
-				var d = _p54._0;
-				var seed4 = _p54._1;
-				var _p55 = _p50._0(seed4);
-				var e = _p55._0;
-				var seed5 = _p55._1;
-				return {
-					ctor: '_Tuple2',
-					_0: A5(func, a, b, c, d, e),
-					_1: seed5
-				};
-			});
-	});
-var _elm_lang$core$Random$andThen = F2(
-	function (callback, _p56) {
-		var _p57 = _p56;
-		return _elm_lang$core$Random$Generator(
-			function (seed) {
-				var _p58 = _p57._0(seed);
-				var result = _p58._0;
-				var newSeed = _p58._1;
-				var _p59 = callback(result);
-				var genB = _p59._0;
-				return genB(newSeed);
-			});
-	});
-var _elm_lang$core$Random$State = F2(
-	function (a, b) {
-		return {ctor: 'State', _0: a, _1: b};
-	});
-var _elm_lang$core$Random$initState = function (seed) {
-	var s = A2(_elm_lang$core$Basics$max, seed, 0 - seed);
-	var q = (s / (_elm_lang$core$Random$magicNum6 - 1)) | 0;
-	var s2 = A2(_elm_lang$core$Basics_ops['%'], q, _elm_lang$core$Random$magicNum7 - 1);
-	var s1 = A2(_elm_lang$core$Basics_ops['%'], s, _elm_lang$core$Random$magicNum6 - 1);
-	return A2(_elm_lang$core$Random$State, s1 + 1, s2 + 1);
-};
-var _elm_lang$core$Random$next = function (_p60) {
-	var _p61 = _p60;
-	var _p63 = _p61._1;
-	var _p62 = _p61._0;
-	var k2 = (_p63 / _elm_lang$core$Random$magicNum3) | 0;
-	var rawState2 = (_elm_lang$core$Random$magicNum4 * (_p63 - (k2 * _elm_lang$core$Random$magicNum3))) - (k2 * _elm_lang$core$Random$magicNum5);
-	var newState2 = (_elm_lang$core$Native_Utils.cmp(rawState2, 0) < 0) ? (rawState2 + _elm_lang$core$Random$magicNum7) : rawState2;
-	var k1 = (_p62 / _elm_lang$core$Random$magicNum1) | 0;
-	var rawState1 = (_elm_lang$core$Random$magicNum0 * (_p62 - (k1 * _elm_lang$core$Random$magicNum1))) - (k1 * _elm_lang$core$Random$magicNum2);
-	var newState1 = (_elm_lang$core$Native_Utils.cmp(rawState1, 0) < 0) ? (rawState1 + _elm_lang$core$Random$magicNum6) : rawState1;
-	var z = newState1 - newState2;
-	var newZ = (_elm_lang$core$Native_Utils.cmp(z, 1) < 0) ? (z + _elm_lang$core$Random$magicNum8) : z;
-	return {
-		ctor: '_Tuple2',
-		_0: newZ,
-		_1: A2(_elm_lang$core$Random$State, newState1, newState2)
-	};
-};
-var _elm_lang$core$Random$split = function (_p64) {
-	var _p65 = _p64;
-	var _p68 = _p65._1;
-	var _p67 = _p65._0;
-	var _p66 = _elm_lang$core$Tuple$second(
-		_elm_lang$core$Random$next(_p65));
-	var t1 = _p66._0;
-	var t2 = _p66._1;
-	var new_s2 = _elm_lang$core$Native_Utils.eq(_p68, 1) ? (_elm_lang$core$Random$magicNum7 - 1) : (_p68 - 1);
-	var new_s1 = _elm_lang$core$Native_Utils.eq(_p67, _elm_lang$core$Random$magicNum6 - 1) ? 1 : (_p67 + 1);
-	return {
-		ctor: '_Tuple2',
-		_0: A2(_elm_lang$core$Random$State, new_s1, t2),
-		_1: A2(_elm_lang$core$Random$State, t1, new_s2)
-	};
-};
-var _elm_lang$core$Random$Seed = function (a) {
-	return {ctor: 'Seed', _0: a};
-};
-var _elm_lang$core$Random$int = F2(
-	function (a, b) {
-		return _elm_lang$core$Random$Generator(
-			function (_p69) {
-				var _p70 = _p69;
-				var _p75 = _p70._0;
-				var base = 2147483561;
-				var f = F3(
-					function (n, acc, state) {
-						f:
-						while (true) {
-							var _p71 = n;
-							if (_p71 === 0) {
-								return {ctor: '_Tuple2', _0: acc, _1: state};
-							} else {
-								var _p72 = _p75.next(state);
-								var x = _p72._0;
-								var nextState = _p72._1;
-								var _v27 = n - 1,
-									_v28 = x + (acc * base),
-									_v29 = nextState;
-								n = _v27;
-								acc = _v28;
-								state = _v29;
-								continue f;
-							}
-						}
-					});
-				var _p73 = (_elm_lang$core$Native_Utils.cmp(a, b) < 0) ? {ctor: '_Tuple2', _0: a, _1: b} : {ctor: '_Tuple2', _0: b, _1: a};
-				var lo = _p73._0;
-				var hi = _p73._1;
-				var k = (hi - lo) + 1;
-				var n = A2(_elm_lang$core$Random$iLogBase, base, k);
-				var _p74 = A3(f, n, 1, _p75.state);
-				var v = _p74._0;
-				var nextState = _p74._1;
-				return {
-					ctor: '_Tuple2',
-					_0: lo + A2(_elm_lang$core$Basics_ops['%'], v, k),
-					_1: _elm_lang$core$Random$Seed(
-						_elm_lang$core$Native_Utils.update(
-							_p75,
-							{state: nextState}))
-				};
-			});
-	});
-var _elm_lang$core$Random$bool = A2(
-	_elm_lang$core$Random$map,
-	F2(
-		function (x, y) {
-			return _elm_lang$core$Native_Utils.eq(x, y);
-		})(1),
-	A2(_elm_lang$core$Random$int, 0, 1));
-var _elm_lang$core$Random$float = F2(
-	function (a, b) {
-		return _elm_lang$core$Random$Generator(
-			function (seed) {
-				var _p76 = A2(
-					_elm_lang$core$Random$step,
-					A2(_elm_lang$core$Random$int, _elm_lang$core$Random$minInt, _elm_lang$core$Random$maxInt),
-					seed);
-				var number = _p76._0;
-				var newSeed = _p76._1;
-				var negativeOneToOne = _elm_lang$core$Basics$toFloat(number) / _elm_lang$core$Basics$toFloat(_elm_lang$core$Random$maxInt - _elm_lang$core$Random$minInt);
-				var _p77 = (_elm_lang$core$Native_Utils.cmp(a, b) < 0) ? {ctor: '_Tuple2', _0: a, _1: b} : {ctor: '_Tuple2', _0: b, _1: a};
-				var lo = _p77._0;
-				var hi = _p77._1;
-				var scaled = ((lo + hi) / 2) + ((hi - lo) * negativeOneToOne);
-				return {ctor: '_Tuple2', _0: scaled, _1: newSeed};
-			});
-	});
-var _elm_lang$core$Random$initialSeed = function (n) {
-	return _elm_lang$core$Random$Seed(
-		{
-			state: _elm_lang$core$Random$initState(n),
-			next: _elm_lang$core$Random$next,
-			split: _elm_lang$core$Random$split,
-			range: _elm_lang$core$Random$range
-		});
-};
-var _elm_lang$core$Random$init = A2(
-	_elm_lang$core$Task$andThen,
-	function (t) {
-		return _elm_lang$core$Task$succeed(
-			_elm_lang$core$Random$initialSeed(
-				_elm_lang$core$Basics$round(t)));
-	},
-	_elm_lang$core$Time$now);
-var _elm_lang$core$Random$Generate = function (a) {
-	return {ctor: 'Generate', _0: a};
-};
-var _elm_lang$core$Random$generate = F2(
-	function (tagger, generator) {
-		return _elm_lang$core$Random$command(
-			_elm_lang$core$Random$Generate(
-				A2(_elm_lang$core$Random$map, tagger, generator)));
-	});
-var _elm_lang$core$Random$cmdMap = F2(
-	function (func, _p78) {
-		var _p79 = _p78;
-		return _elm_lang$core$Random$Generate(
-			A2(_elm_lang$core$Random$map, func, _p79._0));
-	});
-_elm_lang$core$Native_Platform.effectManagers['Random'] = {pkg: 'elm-lang/core', init: _elm_lang$core$Random$init, onEffects: _elm_lang$core$Random$onEffects, onSelfMsg: _elm_lang$core$Random$onSelfMsg, tag: 'cmd', cmdMap: _elm_lang$core$Random$cmdMap};
 var _elm_lang$core$Regex$split = _elm_lang$core$Native_Regex.split;
 var _elm_lang$core$Regex$replace = _elm_lang$core$Native_Regex.replace;
 var _elm_lang$core$Regex$find = _elm_lang$core$Native_Regex.find;
@@ -16146,11 +16516,29 @@ var _user$project$Verbs$vowels = {
 		}
 	}
 };
-var _user$project$Verbs$verbs = _elm_lang$core$Array$fromList(
-	{
+var _user$project$Verbs$verbs = {
+	ctor: '::',
+	_0: {
+		word: 'daħal',
+		radicals: {
+			ctor: '::',
+			_0: 'd',
+			_1: {
+				ctor: '::',
+				_0: 'ħ',
+				_1: {
+					ctor: '::',
+					_0: 'l',
+					_1: {ctor: '[]'}
+				}
+			}
+		},
+		form: 1
+	},
+	_1: {
 		ctor: '::',
 		_0: {
-			word: 'daħal',
+			word: 'daħħal',
 			radicals: {
 				ctor: '::',
 				_0: 'd',
@@ -16164,12 +16552,12 @@ var _user$project$Verbs$verbs = _elm_lang$core$Array$fromList(
 					}
 				}
 			},
-			form: 1
+			form: 2
 		},
 		_1: {
 			ctor: '::',
 			_0: {
-				word: 'daħħal',
+				word: 'tdaħħal',
 				radicals: {
 					ctor: '::',
 					_0: 'd',
@@ -16183,12 +16571,12 @@ var _user$project$Verbs$verbs = _elm_lang$core$Array$fromList(
 						}
 					}
 				},
-				form: 2
+				form: 5
 			},
 			_1: {
 				ctor: '::',
 				_0: {
-					word: 'tdaħħal',
+					word: 'ndaħal',
 					radicals: {
 						ctor: '::',
 						_0: 'd',
@@ -16202,31 +16590,31 @@ var _user$project$Verbs$verbs = _elm_lang$core$Array$fromList(
 							}
 						}
 					},
-					form: 5
+					form: 7
 				},
 				_1: {
 					ctor: '::',
 					_0: {
-						word: 'ndaħal',
+						word: 'fehem',
 						radicals: {
 							ctor: '::',
-							_0: 'd',
+							_0: 'f',
 							_1: {
 								ctor: '::',
-								_0: 'ħ',
+								_0: 'h',
 								_1: {
 									ctor: '::',
-									_0: 'l',
+									_0: 'm',
 									_1: {ctor: '[]'}
 								}
 							}
 						},
-						form: 7
+						form: 1
 					},
 					_1: {
 						ctor: '::',
 						_0: {
-							word: 'fehem',
+							word: 'fiehem',
 							radicals: {
 								ctor: '::',
 								_0: 'f',
@@ -16240,12 +16628,12 @@ var _user$project$Verbs$verbs = _elm_lang$core$Array$fromList(
 									}
 								}
 							},
-							form: 1
+							form: 3
 						},
 						_1: {
 							ctor: '::',
 							_0: {
-								word: 'fiehem',
+								word: 'ftehem',
 								radicals: {
 									ctor: '::',
 									_0: 'f',
@@ -16259,31 +16647,31 @@ var _user$project$Verbs$verbs = _elm_lang$core$Array$fromList(
 										}
 									}
 								},
-								form: 3
+								form: 8
 							},
 							_1: {
 								ctor: '::',
 								_0: {
-									word: 'ftehem',
+									word: 'laqa\'',
 									radicals: {
 										ctor: '::',
-										_0: 'f',
+										_0: 'l',
 										_1: {
 											ctor: '::',
-											_0: 'h',
+											_0: 'q',
 											_1: {
 												ctor: '::',
-												_0: 'm',
+												_0: 'għ',
 												_1: {ctor: '[]'}
 											}
 										}
 									},
-									form: 8
+									form: 1
 								},
 								_1: {
 									ctor: '::',
 									_0: {
-										word: 'laqa\'',
+										word: 'laqqa\'',
 										radicals: {
 											ctor: '::',
 											_0: 'l',
@@ -16297,12 +16685,12 @@ var _user$project$Verbs$verbs = _elm_lang$core$Array$fromList(
 												}
 											}
 										},
-										form: 1
+										form: 2
 									},
 									_1: {
 										ctor: '::',
 										_0: {
-											word: 'laqqa\'',
+											word: 'tlaqqa\'',
 											radicals: {
 												ctor: '::',
 												_0: 'l',
@@ -16316,31 +16704,31 @@ var _user$project$Verbs$verbs = _elm_lang$core$Array$fromList(
 													}
 												}
 											},
-											form: 2
+											form: 5
 										},
 										_1: {
 											ctor: '::',
 											_0: {
-												word: 'tlaqqa\'',
+												word: 'qatel',
 												radicals: {
 													ctor: '::',
-													_0: 'l',
+													_0: 'q',
 													_1: {
 														ctor: '::',
-														_0: 'q',
+														_0: 't',
 														_1: {
 															ctor: '::',
-															_0: 'għ',
+															_0: 'l',
 															_1: {ctor: '[]'}
 														}
 													}
 												},
-												form: 5
+												form: 1
 											},
 											_1: {
 												ctor: '::',
 												_0: {
-													word: 'qatel',
+													word: 'tqatel',
 													radicals: {
 														ctor: '::',
 														_0: 'q',
@@ -16354,12 +16742,12 @@ var _user$project$Verbs$verbs = _elm_lang$core$Array$fromList(
 															}
 														}
 													},
-													form: 1
+													form: 6
 												},
 												_1: {
 													ctor: '::',
 													_0: {
-														word: 'tqatel',
+														word: 'nqatel',
 														radicals: {
 															ctor: '::',
 															_0: 'q',
@@ -16373,31 +16761,31 @@ var _user$project$Verbs$verbs = _elm_lang$core$Array$fromList(
 																}
 															}
 														},
-														form: 6
+														form: 7
 													},
 													_1: {
 														ctor: '::',
 														_0: {
-															word: 'nqatel',
+															word: 'nebaħ',
 															radicals: {
 																ctor: '::',
-																_0: 'q',
+																_0: 'n',
 																_1: {
 																	ctor: '::',
-																	_0: 't',
+																	_0: 'b',
 																	_1: {
 																		ctor: '::',
-																		_0: 'l',
+																		_0: 'ħ',
 																		_1: {ctor: '[]'}
 																	}
 																}
 															},
-															form: 7
+															form: 1
 														},
 														_1: {
 															ctor: '::',
 															_0: {
-																word: 'nebaħ',
+																word: 'nebbaħ',
 																radicals: {
 																	ctor: '::',
 																	_0: 'n',
@@ -16411,12 +16799,12 @@ var _user$project$Verbs$verbs = _elm_lang$core$Array$fromList(
 																		}
 																	}
 																},
-																form: 1
+																form: 2
 															},
 															_1: {
 																ctor: '::',
 																_0: {
-																	word: 'nebbaħ',
+																	word: 'tnebbaħ',
 																	radicals: {
 																		ctor: '::',
 																		_0: 'n',
@@ -16430,12 +16818,12 @@ var _user$project$Verbs$verbs = _elm_lang$core$Array$fromList(
 																			}
 																		}
 																	},
-																	form: 2
+																	form: 5
 																},
 																_1: {
 																	ctor: '::',
 																	_0: {
-																		word: 'tnebbaħ',
+																		word: 'ntebaħ',
 																		radicals: {
 																			ctor: '::',
 																			_0: 'n',
@@ -16449,12 +16837,12 @@ var _user$project$Verbs$verbs = _elm_lang$core$Array$fromList(
 																				}
 																			}
 																		},
-																		form: 5
+																		form: 8
 																	},
 																	_1: {
 																		ctor: '::',
 																		_0: {
-																			word: 'ntebaħ',
+																			word: 'stenbaħ',
 																			radicals: {
 																				ctor: '::',
 																				_0: 'n',
@@ -16468,31 +16856,31 @@ var _user$project$Verbs$verbs = _elm_lang$core$Array$fromList(
 																					}
 																				}
 																			},
-																			form: 8
+																			form: 10
 																		},
 																		_1: {
 																			ctor: '::',
 																			_0: {
-																				word: 'stenbaħ',
+																				word: 'bajjad',
 																				radicals: {
 																					ctor: '::',
-																					_0: 'n',
+																					_0: 'b',
 																					_1: {
 																						ctor: '::',
-																						_0: 'b',
+																						_0: 'j',
 																						_1: {
 																							ctor: '::',
-																							_0: 'ħ',
+																							_0: 'd',
 																							_1: {ctor: '[]'}
 																						}
 																					}
 																				},
-																				form: 10
+																				form: 2
 																			},
 																			_1: {
 																				ctor: '::',
 																				_0: {
-																					word: 'bajjad',
+																					word: 'tbajjad',
 																					radicals: {
 																						ctor: '::',
 																						_0: 'b',
@@ -16506,12 +16894,12 @@ var _user$project$Verbs$verbs = _elm_lang$core$Array$fromList(
 																							}
 																						}
 																					},
-																					form: 2
+																					form: 5
 																				},
 																				_1: {
 																					ctor: '::',
 																					_0: {
-																						word: 'tbajjad',
+																						word: 'bjad',
 																						radicals: {
 																							ctor: '::',
 																							_0: 'b',
@@ -16525,29 +16913,9 @@ var _user$project$Verbs$verbs = _elm_lang$core$Array$fromList(
 																								}
 																							}
 																						},
-																						form: 5
+																						form: 9
 																					},
-																					_1: {
-																						ctor: '::',
-																						_0: {
-																							word: 'bjad',
-																							radicals: {
-																								ctor: '::',
-																								_0: 'b',
-																								_1: {
-																									ctor: '::',
-																									_0: 'j',
-																									_1: {
-																										ctor: '::',
-																										_0: 'd',
-																										_1: {ctor: '[]'}
-																									}
-																								}
-																							},
-																							form: 9
-																						},
-																						_1: {ctor: '[]'}
-																					}
+																					_1: {ctor: '[]'}
 																				}
 																			}
 																		}
@@ -16567,7 +16935,8 @@ var _user$project$Verbs$verbs = _elm_lang$core$Array$fromList(
 				}
 			}
 		}
-	});
+	}
+};
 var _user$project$Verbs$Verb = F3(
 	function (a, b, c) {
 		return {word: a, radicals: b, form: c};
@@ -16714,17 +17083,21 @@ var _user$project$RawHtml$githubRibbon = function (innerHtml) {
 		_rtfeldman$elm_css$Html_Styled_Attributes$property,
 		'innerHTML',
 		_elm_lang$core$Json_Encode$string('\n  <a href=\"https://github.com/pietro909/maltese-verb-forms\" class=\"github-corner\" aria-label=\"View source on Github\"><svg width=\"80\" height=\"80\" viewBox=\"0 0 250 250\" style=\"fill:#151513; color:#fff; position: absolute; top: 0; border: 0; right: 0;\" aria-hidden=\"true\"><path d=\"M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z\"></path><path d=\"M128.3,109.0 C113.8,99.7 119.0,89.6 119.0,89.6 C122.0,82.7 120.5,78.6 120.5,78.6 C119.2,72.0 123.4,76.3 123.4,76.3 C127.3,80.9 125.5,87.3 125.5,87.3 C122.9,97.6 130.6,101.9 134.4,103.2\" fill=\"currentColor\" style=\"transform-origin: 130px 106px;\" class=\"octo-arm\"></path><path d=\"M115.0,115.0 C114.9,115.1 118.7,116.5 119.8,115.4 L133.7,101.6 C136.9,99.2 139.9,98.4 142.2,98.6 C133.8,88.0 127.5,74.4 143.8,58.0 C148.5,53.4 154.0,51.2 159.7,51.0 C160.3,49.4 163.2,43.6 171.4,40.1 C171.4,40.1 176.1,42.5 178.8,56.2 C183.1,58.6 187.2,61.8 190.9,65.4 C194.5,69.0 197.7,73.2 200.1,77.6 C213.8,80.2 216.3,84.9 216.3,84.9 C212.7,93.1 206.9,96.0 205.4,96.6 C205.1,102.4 203.0,107.8 198.3,112.5 C181.9,128.9 168.3,122.5 157.7,114.1 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7 141.6,141.9 141.8,141.8 Z\" fill=\"currentColor\" class=\"octo-body\"></path></svg></a><style>.github-corner:hover .octo-arm{animation:octocat-wave 560ms ease-in-out}@keyframes octocat-wave{0%,100%{transform:rotate(0)}20%,60%{transform:rotate(-25deg)}40%,80%{transform:rotate(10deg)}}@media (max-width:500px){.github-corner:hover .octo-arm{animation:none}.github-corner .octo-arm{animation:octocat-wave 560ms ease-in-out}}</style>\n  ')));
-var _user$project$Main$initialModel = F2(
-	function (first, index) {
-		return {
-			verbs: _user$project$Verbs$verbs,
-			verb: A2(_elm_lang$core$Array$get, index, _user$project$Verbs$verbs),
-			first: first,
-			index: index,
-			message: '',
-			done: false,
-			showSuggestions: false
-		};
+var _user$project$Main$initialModel = {verbsToSee: _user$project$Verbs$verbs, verb: _elm_lang$core$Maybe$Nothing, first: 5, message: '', done: false, showSuggestions: false};
+var _user$project$Main$generateNextData = F2(
+	function (inputVerbs, msg) {
+		return A2(
+			_elm_lang$core$Random$generate,
+			msg,
+			A3(
+				_elm_lang$core$Random$map2,
+				F2(
+					function (index, _p0) {
+						var _p1 = _p0;
+						return {ctor: '_Tuple3', _0: index, _1: _p1._0, _2: _p1._1};
+					}),
+				A2(_elm_lang$core$Random$int, 1, 10),
+				_elm_community$random_extra$Random_List$choose(inputVerbs)));
 	});
 var _user$project$Main$buildButtons = F2(
 	function (seed, target) {
@@ -16775,41 +17148,41 @@ var _user$project$Main$buildButtons = F2(
 				A2(_elm_lang$core$Basics$rem, x, 2),
 				0);
 		};
-		var mix = function (_p0) {
-			return function (_p1) {
-				var _p2 = _p1;
-				var _p4 = _p2._0;
-				var _p3 = _p2._1;
+		var mix = function (_p2) {
+			return function (_p3) {
+				var _p4 = _p3;
+				var _p6 = _p4._0;
+				var _p5 = _p4._1;
 				return isEven(target) ? A2(
 					_elm_lang$core$Basics_ops['++'],
-					_elm_lang$core$List$reverse(_p3),
-					_p4) : _elm_lang$core$List$reverse(
-					A2(_elm_lang$core$Basics_ops['++'], _p3, _p4));
+					_elm_lang$core$List$reverse(_p5),
+					_p6) : _elm_lang$core$List$reverse(
+					A2(_elm_lang$core$Basics_ops['++'], _p5, _p6));
 			}(
 				A3(
 					_elm_lang$core$List$foldl,
 					F2(
-						function (n, _p5) {
-							var _p6 = _p5;
-							var _p8 = _p6._0;
-							var _p7 = _p6._1;
+						function (n, _p7) {
+							var _p8 = _p7;
+							var _p10 = _p8._0;
+							var _p9 = _p8._1;
 							return _elm_lang$core$Native_Utils.eq(n, seed) ? {
 								ctor: '_Tuple2',
 								_0: {ctor: '[]'},
 								_1: A2(
 									_elm_lang$core$Basics_ops['++'],
-									_p8,
-									{ctor: '::', _0: n, _1: _p7})
+									_p10,
+									{ctor: '::', _0: n, _1: _p9})
 							} : (isEven(n) ? {
 								ctor: '_Tuple2',
-								_0: {ctor: '::', _0: n, _1: _p8},
-								_1: _p7
+								_0: {ctor: '::', _0: n, _1: _p10},
+								_1: _p9
 							} : {
 								ctor: '_Tuple2',
-								_0: _p7,
+								_0: _p9,
 								_1: A2(
 									_elm_lang$core$List$append,
-									_p8,
+									_p10,
 									{
 										ctor: '::',
 										_0: n,
@@ -16822,7 +17195,7 @@ var _user$project$Main$buildButtons = F2(
 						_0: {ctor: '[]'},
 						_1: {ctor: '[]'}
 					},
-					_p0));
+					_p2));
 		};
 		var start = isEven(seed) ? mix(
 			A2(
@@ -16856,9 +17229,9 @@ var _user$project$Main$buildButtons = F2(
 				},
 				start));
 	});
-var _user$project$Main$Model = F7(
-	function (a, b, c, d, e, f, g) {
-		return {verb: a, done: b, index: c, message: d, first: e, verbs: f, showSuggestions: g};
+var _user$project$Main$Model = F6(
+	function (a, b, c, d, e, f) {
+		return {verb: a, done: b, message: c, first: d, verbsToSee: e, showSuggestions: f};
 	});
 var _user$project$Main$ShowSuggestions = {ctor: 'ShowSuggestions'};
 var _user$project$Main$Restart = {ctor: 'Restart'};
@@ -16926,8 +17299,8 @@ var _user$project$Main$viewNextVerb = F2(
 				_elm_lang$core$List$foldl,
 				F2(
 					function (letter, acc) {
-						var _p9 = letter;
-						switch (_p9.ctor) {
+						var _p11 = letter;
+						switch (_p11.ctor) {
 							case 'Consonant':
 								return {
 									ctor: '::',
@@ -16938,7 +17311,7 @@ var _user$project$Main$viewNextVerb = F2(
 										{ctor: '[]'},
 										{
 											ctor: '::',
-											_0: _rtfeldman$elm_css$Html_Styled$text(_p9._0),
+											_0: _rtfeldman$elm_css$Html_Styled$text(_p11._0),
 											_1: {ctor: '[]'}
 										}),
 									_1: acc
@@ -16953,7 +17326,7 @@ var _user$project$Main$viewNextVerb = F2(
 										{ctor: '[]'},
 										{
 											ctor: '::',
-											_0: _rtfeldman$elm_css$Html_Styled$text(_p9._0),
+											_0: _rtfeldman$elm_css$Html_Styled$text(_p11._0),
 											_1: {ctor: '[]'}
 										}),
 									_1: acc
@@ -16968,7 +17341,7 @@ var _user$project$Main$viewNextVerb = F2(
 										{ctor: '[]'},
 										{
 											ctor: '::',
-											_0: _rtfeldman$elm_css$Html_Styled$text(_p9._0),
+											_0: _rtfeldman$elm_css$Html_Styled$text(_p11._0),
 											_1: {ctor: '[]'}
 										}),
 									_1: acc
@@ -16983,7 +17356,7 @@ var _user$project$Main$viewNextVerb = F2(
 										{ctor: '[]'},
 										{
 											ctor: '::',
-											_0: _rtfeldman$elm_css$Html_Styled$text(_p9._0),
+											_0: _rtfeldman$elm_css$Html_Styled$text(_p11._0),
 											_1: {ctor: '[]'}
 										}),
 									_1: acc
@@ -17083,9 +17456,9 @@ var _user$project$Main$viewNextVerb = F2(
 	});
 var _user$project$Main$view = function (model) {
 	var mainNode = function () {
-		var _p10 = model.verb;
-		if (_p10.ctor === 'Just') {
-			return A2(_user$project$Main$viewNextVerb, _p10._0, model);
+		var _p12 = model.verb;
+		if (_p12.ctor === 'Just') {
+			return A2(_user$project$Main$viewNextVerb, _p12._0, model);
 		} else {
 			return {
 				ctor: '::',
@@ -17174,22 +17547,26 @@ var _user$project$Main$view = function (model) {
 var _user$project$Main$Next = function (a) {
 	return {ctor: 'Next', _0: a};
 };
-var _user$project$Main$generateNumber = A2(
-	_elm_lang$core$Random$generate,
-	_user$project$Main$Next,
-	A2(_elm_lang$core$Random$int, 1, 10));
+var _user$project$Main$init = {
+	ctor: '_Tuple2',
+	_0: _user$project$Main$initialModel,
+	_1: A2(_user$project$Main$generateNextData, _user$project$Main$initialModel.verbsToSee, _user$project$Main$Next)
+};
 var _user$project$Main$update = F2(
 	function (msg, model) {
-		var _p11 = msg;
-		switch (_p11.ctor) {
+		var _p13 = msg;
+		switch (_p13.ctor) {
 			case 'Next':
+				var newModel = _elm_lang$core$Native_Utils.update(
+					model,
+					{verbsToSee: _p13._0._2, verb: _p13._0._1});
+				return {ctor: '_Tuple2', _0: newModel, _1: _elm_lang$core$Platform_Cmd$none};
+			case 'GetNext':
 				return {
 					ctor: '_Tuple2',
-					_0: A2(_user$project$Main$initialModel, _p11._0, model.index + 1),
-					_1: _elm_lang$core$Platform_Cmd$none
+					_0: model,
+					_1: A2(_user$project$Main$generateNextData, model.verbsToSee, _user$project$Main$Next)
 				};
-			case 'GetNext':
-				return {ctor: '_Tuple2', _0: model, _1: _user$project$Main$generateNumber};
 			case 'ShowSuggestions':
 				return {
 					ctor: '_Tuple2',
@@ -17199,16 +17576,12 @@ var _user$project$Main$update = F2(
 					_1: _elm_lang$core$Platform_Cmd$none
 				};
 			case 'Restart':
-				return {
-					ctor: '_Tuple2',
-					_0: A2(_user$project$Main$initialModel, 5, 0),
-					_1: _elm_lang$core$Platform_Cmd$none
-				};
+				return _user$project$Main$init;
 			default:
-				var _p12 = model.verb;
-				if (_p12.ctor === 'Just') {
-					var _p13 = _p12._0;
-					return _elm_lang$core$Native_Utils.eq(_p13.form, _p11._0) ? {
+				var _p14 = model.verb;
+				if (_p14.ctor === 'Just') {
+					var _p15 = _p14._0;
+					return _elm_lang$core$Native_Utils.eq(_p15.form, _p13._0) ? {
 						ctor: '_Tuple2',
 						_0: _elm_lang$core$Native_Utils.update(
 							model,
@@ -17222,7 +17595,7 @@ var _user$project$Main$update = F2(
 								message: A2(
 									_elm_lang$core$Basics_ops['++'],
 									'wrong, it is ',
-									_elm_lang$core$Basics$toString(_p13.form)),
+									_elm_lang$core$Basics$toString(_p15.form)),
 								done: true
 							}),
 						_1: _elm_lang$core$Platform_Cmd$none
@@ -17234,17 +17607,13 @@ var _user$project$Main$update = F2(
 	});
 var _user$project$Main$main = _elm_lang$html$Html$program(
 	{
-		view: function (_p14) {
+		view: function (_p16) {
 			return _rtfeldman$elm_css$Html_Styled$toUnstyled(
-				_user$project$Main$view(_p14));
+				_user$project$Main$view(_p16));
 		},
 		update: _user$project$Main$update,
-		init: {
-			ctor: '_Tuple2',
-			_0: A2(_user$project$Main$initialModel, 5, 0),
-			_1: _user$project$Main$generateNumber
-		},
-		subscriptions: function (_p15) {
+		init: _user$project$Main$init,
+		subscriptions: function (_p17) {
 			return _elm_lang$core$Platform_Sub$none;
 		}
 	})();
