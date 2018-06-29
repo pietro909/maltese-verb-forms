@@ -111,13 +111,13 @@ toPrintable { word, radicals, form } =
             |> List.foldl
                 (\letter ( index, result ) ->
                     if List.member index indexes then
-                        ( index + 1, Radical letter :: result )
+                        ( index + 1, Consonant letter :: result )
                     else if List.member letter vowels then
                         ( index + 1, Vowel letter :: result )
                     else if List.member letter symbols then
                         ( index + 1, Symbol letter :: result )
                     else
-                        ( index + 1, Consonant letter :: result )
+                        ( index + 1, Radical letter :: result )
                 )
                 ( 0, [] )
             |> Tuple.second

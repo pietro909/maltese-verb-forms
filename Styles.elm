@@ -10,8 +10,17 @@ import Css.Foreign as Foreign
 import Array
 
 
+magdaColors =
+    { wheat = hex "#F7E0BC"
+    , goldenrod = hex "#E7BB46"
+    , steelBlue = hex "#3E7091"
+    , linen = hex "#FBF4EC"
+    , lightSteelBlue = hex "#A3D3D3"
+    }
+
+
 radical =
-    [ color (hex "0E9260") ]
+    [ color magdaColors.goldenrod ]
 
 
 vowel =
@@ -19,11 +28,11 @@ vowel =
 
 
 consonant =
-    [ color (rgb 0 150 250) ]
+    [ color magdaColors.lightSteelBlue ]
 
 
 marker =
-    [ color (hex "6D0310") ]
+    []
 
 
 verb : Attribute msg
@@ -44,6 +53,21 @@ choices =
     css
         [ displayFlex
         , justifyContent center
+        ]
+
+
+instructions : Attribute msg
+instructions =
+    css
+        []
+
+
+header : Attribute msg
+header =
+    css
+        [ padding (em 0.8)
+        , color magdaColors.steelBlue
+        , backgroundColor magdaColors.linen
         ]
 
 
@@ -71,13 +95,19 @@ container =
         , flex (int 1)
         , justifyContent spaceBetween
         , height (pct 54)
+        , paddingBottom (em 2)
+        , paddingTop (em 2)
         ]
 
 
 foreig =
     Foreign.global
         [ Foreign.html [ height (pct 100) ]
-        , Foreign.body [ height (pct 100) ]
+        , Foreign.body
+            [ height (pct 100)
+
+            --, backgroundColor magdaColors.linen
+            ]
         ]
 
 
@@ -90,6 +120,7 @@ page =
         , height (pct 100)
         , justifyContent center
         , alignItems center
+        , flexFlow1 column
         ]
 
 
@@ -100,7 +131,7 @@ buttonNextContainer =
         , justifyContent center
         , alignItems center
         , borderRadius (pct 50)
-        , backgroundColor (hex "CF142A")
+        , backgroundColor magdaColors.goldenrod
         , width (em 4)
         , height (em 4)
         , marginTop (em 2)

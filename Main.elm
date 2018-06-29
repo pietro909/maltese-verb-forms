@@ -1,7 +1,7 @@
 module Main exposing (..)
 
 import Html
-import Html.Styled.Attributes exposing (css, disabled, name, content)
+import Html.Styled.Attributes exposing (css, disabled, name, content, href)
 import Html.Styled.Events exposing (onClick)
 import Html.Styled exposing (..)
 import Array
@@ -34,9 +34,18 @@ view model =
                 ]
                 []
             , Styles.foreig
-            , RawHtml.githubRibbon
 
             -- app starts here
+            , header [ Styles.header ]
+                [ div [ Styles.instructions ]
+                    [ text "The word shown below is a verb in its "
+                    , a
+                        [ href "http://ablogaboutlanguages.blogspot.com/2016/05/maltese-verbs-learn-present-maltese.html"
+                        ]
+                        [ text "mamma" ]
+                    , text ". Click the number corresponding with the verb's form."
+                    ]
+                ]
             , div [ Styles.container ] mainNode
             ]
 
@@ -74,7 +83,7 @@ viewNextVerb verb model =
                     [ button [ Styles.buttonNext, onClick GetNext ] [ text "next" ] ]
             else
                 div [ Styles.buttonNextContainer ]
-                    [ button [ Styles.buttonNext, onClick ShowSuggestions ] [ text "?" ] ]
+                    [ button [ Styles.buttonNext, onClick ShowSuggestions ] [ text "hint" ] ]
 
         theVerb =
             model.verb

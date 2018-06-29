@@ -16178,45 +16178,6 @@ var _user$project$Styles$buttonNext = _rtfeldman$elm_css$Html_Styled_Attributes$
 			}
 		}
 	});
-var _user$project$Styles$buttonNextContainer = _rtfeldman$elm_css$Html_Styled_Attributes$css(
-	{
-		ctor: '::',
-		_0: _rtfeldman$elm_css$Css$displayFlex,
-		_1: {
-			ctor: '::',
-			_0: _rtfeldman$elm_css$Css$justifyContent(_rtfeldman$elm_css$Css$center),
-			_1: {
-				ctor: '::',
-				_0: _rtfeldman$elm_css$Css$alignItems(_rtfeldman$elm_css$Css$center),
-				_1: {
-					ctor: '::',
-					_0: _rtfeldman$elm_css$Css$borderRadius(
-						_rtfeldman$elm_css$Css$pct(50)),
-					_1: {
-						ctor: '::',
-						_0: _rtfeldman$elm_css$Css$backgroundColor(
-							_rtfeldman$elm_css$Css$hex('CF142A')),
-						_1: {
-							ctor: '::',
-							_0: _rtfeldman$elm_css$Css$width(
-								_rtfeldman$elm_css$Css$em(4)),
-							_1: {
-								ctor: '::',
-								_0: _rtfeldman$elm_css$Css$height(
-									_rtfeldman$elm_css$Css$em(4)),
-								_1: {
-									ctor: '::',
-									_0: _rtfeldman$elm_css$Css$marginTop(
-										_rtfeldman$elm_css$Css$em(2)),
-									_1: {ctor: '[]'}
-								}
-							}
-						}
-					}
-				}
-			}
-		}
-	});
 var _user$project$Styles$page = _rtfeldman$elm_css$Html_Styled_Attributes$css(
 	{
 		ctor: '::',
@@ -16239,7 +16200,11 @@ var _user$project$Styles$page = _rtfeldman$elm_css$Html_Styled_Attributes$css(
 						_1: {
 							ctor: '::',
 							_0: _rtfeldman$elm_css$Css$alignItems(_rtfeldman$elm_css$Css$center),
-							_1: {ctor: '[]'}
+							_1: {
+								ctor: '::',
+								_0: _rtfeldman$elm_css$Css$flexFlow1(_rtfeldman$elm_css$Css$column),
+								_1: {ctor: '[]'}
+							}
 						}
 					}
 				}
@@ -16289,7 +16254,17 @@ var _user$project$Styles$container = _rtfeldman$elm_css$Html_Styled_Attributes$c
 							ctor: '::',
 							_0: _rtfeldman$elm_css$Css$height(
 								_rtfeldman$elm_css$Css$pct(54)),
-							_1: {ctor: '[]'}
+							_1: {
+								ctor: '::',
+								_0: _rtfeldman$elm_css$Css$paddingBottom(
+									_rtfeldman$elm_css$Css$em(2)),
+								_1: {
+									ctor: '::',
+									_0: _rtfeldman$elm_css$Css$paddingTop(
+										_rtfeldman$elm_css$Css$em(2)),
+									_1: {ctor: '[]'}
+								}
+							}
 						}
 					}
 				}
@@ -16338,6 +16313,8 @@ var _user$project$Styles$choice = _rtfeldman$elm_css$Html_Styled_Attributes$css(
 			}
 		}
 	});
+var _user$project$Styles$instructions = _rtfeldman$elm_css$Html_Styled_Attributes$css(
+	{ctor: '[]'});
 var _user$project$Styles$choices = _rtfeldman$elm_css$Html_Styled_Attributes$css(
 	{
 		ctor: '::',
@@ -16381,25 +16358,78 @@ var _user$project$Styles$verb = _rtfeldman$elm_css$Html_Styled_Attributes$css(
 			}
 		}
 	});
-var _user$project$Styles$marker = {
+var _user$project$Styles$marker = {ctor: '[]'};
+var _user$project$Styles$vowel = {ctor: '[]'};
+var _user$project$Styles$magdaColors = {
+	wheat: _rtfeldman$elm_css$Css$hex('#F7E0BC'),
+	goldenrod: _rtfeldman$elm_css$Css$hex('#E7BB46'),
+	steelBlue: _rtfeldman$elm_css$Css$hex('#3E7091'),
+	linen: _rtfeldman$elm_css$Css$hex('#FBF4EC'),
+	lightSteelBlue: _rtfeldman$elm_css$Css$hex('#A3D3D3')
+};
+var _user$project$Styles$radical = {
 	ctor: '::',
-	_0: _rtfeldman$elm_css$Css$color(
-		_rtfeldman$elm_css$Css$hex('6D0310')),
+	_0: _rtfeldman$elm_css$Css$color(_user$project$Styles$magdaColors.goldenrod),
 	_1: {ctor: '[]'}
 };
 var _user$project$Styles$consonant = {
 	ctor: '::',
-	_0: _rtfeldman$elm_css$Css$color(
-		A3(_rtfeldman$elm_css$Css$rgb, 0, 150, 250)),
+	_0: _rtfeldman$elm_css$Css$color(_user$project$Styles$magdaColors.lightSteelBlue),
 	_1: {ctor: '[]'}
 };
-var _user$project$Styles$vowel = {ctor: '[]'};
-var _user$project$Styles$radical = {
-	ctor: '::',
-	_0: _rtfeldman$elm_css$Css$color(
-		_rtfeldman$elm_css$Css$hex('0E9260')),
-	_1: {ctor: '[]'}
-};
+var _user$project$Styles$header = _rtfeldman$elm_css$Html_Styled_Attributes$css(
+	{
+		ctor: '::',
+		_0: _rtfeldman$elm_css$Css$padding(
+			_rtfeldman$elm_css$Css$em(0.8)),
+		_1: {
+			ctor: '::',
+			_0: _rtfeldman$elm_css$Css$color(_user$project$Styles$magdaColors.steelBlue),
+			_1: {
+				ctor: '::',
+				_0: _rtfeldman$elm_css$Css$backgroundColor(_user$project$Styles$magdaColors.linen),
+				_1: {ctor: '[]'}
+			}
+		}
+	});
+var _user$project$Styles$buttonNextContainer = _rtfeldman$elm_css$Html_Styled_Attributes$css(
+	{
+		ctor: '::',
+		_0: _rtfeldman$elm_css$Css$displayFlex,
+		_1: {
+			ctor: '::',
+			_0: _rtfeldman$elm_css$Css$justifyContent(_rtfeldman$elm_css$Css$center),
+			_1: {
+				ctor: '::',
+				_0: _rtfeldman$elm_css$Css$alignItems(_rtfeldman$elm_css$Css$center),
+				_1: {
+					ctor: '::',
+					_0: _rtfeldman$elm_css$Css$borderRadius(
+						_rtfeldman$elm_css$Css$pct(50)),
+					_1: {
+						ctor: '::',
+						_0: _rtfeldman$elm_css$Css$backgroundColor(_user$project$Styles$magdaColors.goldenrod),
+						_1: {
+							ctor: '::',
+							_0: _rtfeldman$elm_css$Css$width(
+								_rtfeldman$elm_css$Css$em(4)),
+							_1: {
+								ctor: '::',
+								_0: _rtfeldman$elm_css$Css$height(
+									_rtfeldman$elm_css$Css$em(4)),
+								_1: {
+									ctor: '::',
+									_0: _rtfeldman$elm_css$Css$marginTop(
+										_rtfeldman$elm_css$Css$em(2)),
+									_1: {ctor: '[]'}
+								}
+							}
+						}
+					}
+				}
+			}
+		}
+	});
 var _user$project$Verbs$getWord = function (_p0) {
 	var _p1 = _p0;
 	return _p1.word;
@@ -16973,7 +17003,7 @@ var _user$project$Verbs$toPrintable = function (_p4) {
 							_0: _p8 + 1,
 							_1: {
 								ctor: '::',
-								_0: _user$project$Verbs$Radical(letter),
+								_0: _user$project$Verbs$Consonant(letter),
 								_1: _p9
 							}
 						} : (A2(_elm_lang$core$List$member, letter, _user$project$Verbs$vowels) ? {
@@ -16997,7 +17027,7 @@ var _user$project$Verbs$toPrintable = function (_p4) {
 							_0: _p8 + 1,
 							_1: {
 								ctor: '::',
-								_0: _user$project$Verbs$Consonant(letter),
+								_0: _user$project$Verbs$Radical(letter),
 								_1: _p9
 							}
 						}));
@@ -17289,7 +17319,7 @@ var _user$project$Main$viewNextVerb = F2(
 					},
 					{
 						ctor: '::',
-						_0: _rtfeldman$elm_css$Html_Styled$text('?'),
+						_0: _rtfeldman$elm_css$Html_Styled$text('hint'),
 						_1: {ctor: '[]'}
 					}),
 				_1: {ctor: '[]'}
@@ -17527,7 +17557,48 @@ var _user$project$Main$view = function (model) {
 				_0: _user$project$Styles$foreig,
 				_1: {
 					ctor: '::',
-					_0: _user$project$RawHtml$githubRibbon,
+					_0: A2(
+						_rtfeldman$elm_css$Html_Styled$header,
+						{
+							ctor: '::',
+							_0: _user$project$Styles$header,
+							_1: {ctor: '[]'}
+						},
+						{
+							ctor: '::',
+							_0: A2(
+								_rtfeldman$elm_css$Html_Styled$div,
+								{
+									ctor: '::',
+									_0: _user$project$Styles$instructions,
+									_1: {ctor: '[]'}
+								},
+								{
+									ctor: '::',
+									_0: _rtfeldman$elm_css$Html_Styled$text('The word shown below is a verb in its '),
+									_1: {
+										ctor: '::',
+										_0: A2(
+											_rtfeldman$elm_css$Html_Styled$a,
+											{
+												ctor: '::',
+												_0: _rtfeldman$elm_css$Html_Styled_Attributes$href('http://ablogaboutlanguages.blogspot.com/2016/05/maltese-verbs-learn-present-maltese.html'),
+												_1: {ctor: '[]'}
+											},
+											{
+												ctor: '::',
+												_0: _rtfeldman$elm_css$Html_Styled$text('mamma'),
+												_1: {ctor: '[]'}
+											}),
+										_1: {
+											ctor: '::',
+											_0: _rtfeldman$elm_css$Html_Styled$text('. Click the number corresponding with the verb\'s form.'),
+											_1: {ctor: '[]'}
+										}
+									}
+								}),
+							_1: {ctor: '[]'}
+						}),
 					_1: {
 						ctor: '::',
 						_0: A2(
