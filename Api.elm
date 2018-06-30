@@ -8,7 +8,9 @@ getVerb : String -> Http.Request String
 getVerb mamma =
     let
         query =
-            "http://mlrs.research.um.edu.mt/resources/gabra-api/lexemes/search?pos=VERB&s=" ++ mamma
+            "https://cors-anywhere.herokuapp.com/"
+                ++ "http://mlrs.research.um.edu.mt/resources/gabra-api/lexemes/search?pos=VERB&s="
+                ++ mamma
     in
         Http.get query decodeGloss
 
