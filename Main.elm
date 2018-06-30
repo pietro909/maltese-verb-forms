@@ -1,9 +1,11 @@
 module Main exposing (..)
 
+import Api
 import Html
 import Html.Styled.Attributes exposing (css, disabled, name, content, href)
 import Html.Styled.Events exposing (onClick)
 import Html.Styled exposing (..)
+import Http
 import Array
 import Styles
 import Maybe.Extra as Mx
@@ -45,6 +47,13 @@ view model =
                         [ text "mamma" ]
                     , text ". Click the number corresponding with the verb's form."
                     ]
+                , div [ Styles.instructions ]
+                    [ text "The translation is provided by "
+                    , a
+                        [ href "http://mlrs.research.um.edu.mt/resources/gabra-api/"
+                        ]
+                        [ text "Ġabra API" ]
+                    ]
                 ]
             , div [ Styles.container ] mainNode
             ]
@@ -85,6 +94,17 @@ viewNextVerb verb model =
                 div [ Styles.buttonNextContainer ]
                     [ button [ Styles.buttonNext, onClick ShowSuggestions ] [ text "hint" ] ]
 
+        translationView =
+            div [ Styles.buttonTranslation ]
+                [ (case model.translation of
+                    Just aTranslation ->
+                        text aTranslation
+
+                    Nothing ->
+                        button [ onClick Translate ] [ text "show translation" ]
+                  )
+                ]
+
         theVerb =
             model.verb
                 |> Maybe.map
@@ -109,6 +129,7 @@ viewNextVerb verb model =
                 )
                 (buildButtons model.first verb.form)
         , div [ Styles.message ] [ text model.message ]
+        , translationView
         , buttonNext
         ]
 
@@ -168,6 +189,7 @@ buildButtons seed target =
 
 type alias Model =
     { verb : Maybe Verb
+    , translation : Maybe String
     , done : Bool
     , message : String
     , first : Int
@@ -182,11 +204,39 @@ type Msg
     | Answer Int
     | Restart
     | ShowSuggestions
+    | Translate
+    | Translation (Result Http.Error String)
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
     case msg of
+        Translation (Ok result) ->
+            let
+                newModel =
+                    { model | translation = Just result }
+            in
+                ( newModel, Cmd.none )
+
+        Translation (Err e) ->
+            let
+                newModel =
+                    { model | translation = Just "sorry, couldn't translate this verb :-(" }
+            in
+                ( newModel, Cmd.none )
+
+        Translate ->
+            model.verb
+                |> Maybe.map
+                    (\{ word, radicals, form } ->
+                        let
+                            cmd =
+                                Http.send Translation (Api.getVerb word)
+                        in
+                            ( model, cmd )
+                    )
+                |> Maybe.withDefault ( model, Cmd.none )
+
         Next ( first, maybeVerb, verbsToSee ) ->
             let
                 newModel =
@@ -232,6 +282,7 @@ initialModel =
     , message = ""
     , done = False
     , showSuggestions = False
+    , translation = Nothing
     }
 
 

@@ -151,6 +151,28 @@ buttonNext =
         ]
 
 
+buttonTranslation : Attribute msg
+buttonTranslation =
+    css
+        [ fontSize (em 1)
+        , textAlign center
+        , height (em 2)
+
+        --color Colors.white
+        --, property "-webkit-appearance" "none"
+        , borderWidth (em 0.1)
+
+        --, backgroundColor transparent
+        , borderColor magdaColors.linen
+        , borderStyle solid
+        , displayFlex
+        , flex (num 0.5)
+        , alignItems center
+        , width (pct 100)
+        , justifyContent center
+        ]
+
+
 message : Attribute msg
 message =
     css
