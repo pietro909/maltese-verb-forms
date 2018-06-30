@@ -9535,6 +9535,364 @@ var _elm_lang$html$Html$details = _elm_lang$html$Html$node('details');
 var _elm_lang$html$Html$summary = _elm_lang$html$Html$node('summary');
 var _elm_lang$html$Html$menuitem = _elm_lang$html$Html$node('menuitem');
 var _elm_lang$html$Html$menu = _elm_lang$html$Html$node('menu');
+var _elm_lang$http$Native_Http = function() {
+
+
+// ENCODING AND DECODING
+
+function encodeUri(string)
+{
+	return encodeURIComponent(string);
+}
+
+function decodeUri(string)
+{
+	try
+	{
+		return _elm_lang$core$Maybe$Just(decodeURIComponent(string));
+	}
+	catch(e)
+	{
+		return _elm_lang$core$Maybe$Nothing;
+	}
+}
+
+
+// SEND REQUEST
+
+function toTask(request, maybeProgress)
+{
+	return _elm_lang$core$Native_Scheduler.nativeBinding(function(callback)
+	{
+		var xhr = new XMLHttpRequest();
+
+		configureProgress(xhr, maybeProgress);
+
+		xhr.addEventListener('error', function() {
+			callback(_elm_lang$core$Native_Scheduler.fail({ ctor: 'NetworkError' }));
+		});
+		xhr.addEventListener('timeout', function() {
+			callback(_elm_lang$core$Native_Scheduler.fail({ ctor: 'Timeout' }));
+		});
+		xhr.addEventListener('load', function() {
+			callback(handleResponse(xhr, request.expect.responseToResult));
+		});
+
+		try
+		{
+			xhr.open(request.method, request.url, true);
+		}
+		catch (e)
+		{
+			return callback(_elm_lang$core$Native_Scheduler.fail({ ctor: 'BadUrl', _0: request.url }));
+		}
+
+		configureRequest(xhr, request);
+		send(xhr, request.body);
+
+		return function() { xhr.abort(); };
+	});
+}
+
+function configureProgress(xhr, maybeProgress)
+{
+	if (maybeProgress.ctor === 'Nothing')
+	{
+		return;
+	}
+
+	xhr.addEventListener('progress', function(event) {
+		if (!event.lengthComputable)
+		{
+			return;
+		}
+		_elm_lang$core$Native_Scheduler.rawSpawn(maybeProgress._0({
+			bytes: event.loaded,
+			bytesExpected: event.total
+		}));
+	});
+}
+
+function configureRequest(xhr, request)
+{
+	function setHeader(pair)
+	{
+		xhr.setRequestHeader(pair._0, pair._1);
+	}
+
+	A2(_elm_lang$core$List$map, setHeader, request.headers);
+	xhr.responseType = request.expect.responseType;
+	xhr.withCredentials = request.withCredentials;
+
+	if (request.timeout.ctor === 'Just')
+	{
+		xhr.timeout = request.timeout._0;
+	}
+}
+
+function send(xhr, body)
+{
+	switch (body.ctor)
+	{
+		case 'EmptyBody':
+			xhr.send();
+			return;
+
+		case 'StringBody':
+			xhr.setRequestHeader('Content-Type', body._0);
+			xhr.send(body._1);
+			return;
+
+		case 'FormDataBody':
+			xhr.send(body._0);
+			return;
+	}
+}
+
+
+// RESPONSES
+
+function handleResponse(xhr, responseToResult)
+{
+	var response = toResponse(xhr);
+
+	if (xhr.status < 200 || 300 <= xhr.status)
+	{
+		response.body = xhr.responseText;
+		return _elm_lang$core$Native_Scheduler.fail({
+			ctor: 'BadStatus',
+			_0: response
+		});
+	}
+
+	var result = responseToResult(response);
+
+	if (result.ctor === 'Ok')
+	{
+		return _elm_lang$core$Native_Scheduler.succeed(result._0);
+	}
+	else
+	{
+		response.body = xhr.responseText;
+		return _elm_lang$core$Native_Scheduler.fail({
+			ctor: 'BadPayload',
+			_0: result._0,
+			_1: response
+		});
+	}
+}
+
+function toResponse(xhr)
+{
+	return {
+		status: { code: xhr.status, message: xhr.statusText },
+		headers: parseHeaders(xhr.getAllResponseHeaders()),
+		url: xhr.responseURL,
+		body: xhr.response
+	};
+}
+
+function parseHeaders(rawHeaders)
+{
+	var headers = _elm_lang$core$Dict$empty;
+
+	if (!rawHeaders)
+	{
+		return headers;
+	}
+
+	var headerPairs = rawHeaders.split('\u000d\u000a');
+	for (var i = headerPairs.length; i--; )
+	{
+		var headerPair = headerPairs[i];
+		var index = headerPair.indexOf('\u003a\u0020');
+		if (index > 0)
+		{
+			var key = headerPair.substring(0, index);
+			var value = headerPair.substring(index + 2);
+
+			headers = A3(_elm_lang$core$Dict$update, key, function(oldValue) {
+				if (oldValue.ctor === 'Just')
+				{
+					return _elm_lang$core$Maybe$Just(value + ', ' + oldValue._0);
+				}
+				return _elm_lang$core$Maybe$Just(value);
+			}, headers);
+		}
+	}
+
+	return headers;
+}
+
+
+// EXPECTORS
+
+function expectStringResponse(responseToResult)
+{
+	return {
+		responseType: 'text',
+		responseToResult: responseToResult
+	};
+}
+
+function mapExpect(func, expect)
+{
+	return {
+		responseType: expect.responseType,
+		responseToResult: function(response) {
+			var convertedResponse = expect.responseToResult(response);
+			return A2(_elm_lang$core$Result$map, func, convertedResponse);
+		}
+	};
+}
+
+
+// BODY
+
+function multipart(parts)
+{
+	var formData = new FormData();
+
+	while (parts.ctor !== '[]')
+	{
+		var part = parts._0;
+		formData.append(part._0, part._1);
+		parts = parts._1;
+	}
+
+	return { ctor: 'FormDataBody', _0: formData };
+}
+
+return {
+	toTask: F2(toTask),
+	expectStringResponse: expectStringResponse,
+	mapExpect: F2(mapExpect),
+	multipart: multipart,
+	encodeUri: encodeUri,
+	decodeUri: decodeUri
+};
+
+}();
+var _elm_lang$http$Http_Internal$map = F2(
+	function (func, request) {
+		return _elm_lang$core$Native_Utils.update(
+			request,
+			{
+				expect: A2(_elm_lang$http$Native_Http.mapExpect, func, request.expect)
+			});
+	});
+var _elm_lang$http$Http_Internal$RawRequest = F7(
+	function (a, b, c, d, e, f, g) {
+		return {method: a, headers: b, url: c, body: d, expect: e, timeout: f, withCredentials: g};
+	});
+var _elm_lang$http$Http_Internal$Request = function (a) {
+	return {ctor: 'Request', _0: a};
+};
+var _elm_lang$http$Http_Internal$Expect = {ctor: 'Expect'};
+var _elm_lang$http$Http_Internal$FormDataBody = {ctor: 'FormDataBody'};
+var _elm_lang$http$Http_Internal$StringBody = F2(
+	function (a, b) {
+		return {ctor: 'StringBody', _0: a, _1: b};
+	});
+var _elm_lang$http$Http_Internal$EmptyBody = {ctor: 'EmptyBody'};
+var _elm_lang$http$Http_Internal$Header = F2(
+	function (a, b) {
+		return {ctor: 'Header', _0: a, _1: b};
+	});
+var _elm_lang$http$Http$decodeUri = _elm_lang$http$Native_Http.decodeUri;
+var _elm_lang$http$Http$encodeUri = _elm_lang$http$Native_Http.encodeUri;
+var _elm_lang$http$Http$expectStringResponse = _elm_lang$http$Native_Http.expectStringResponse;
+var _elm_lang$http$Http$expectJson = function (decoder) {
+	return _elm_lang$http$Http$expectStringResponse(
+		function (response) {
+			return A2(_elm_lang$core$Json_Decode$decodeString, decoder, response.body);
+		});
+};
+var _elm_lang$http$Http$expectString = _elm_lang$http$Http$expectStringResponse(
+	function (response) {
+		return _elm_lang$core$Result$Ok(response.body);
+	});
+var _elm_lang$http$Http$multipartBody = _elm_lang$http$Native_Http.multipart;
+var _elm_lang$http$Http$stringBody = _elm_lang$http$Http_Internal$StringBody;
+var _elm_lang$http$Http$jsonBody = function (value) {
+	return A2(
+		_elm_lang$http$Http_Internal$StringBody,
+		'application/json',
+		A2(_elm_lang$core$Json_Encode$encode, 0, value));
+};
+var _elm_lang$http$Http$emptyBody = _elm_lang$http$Http_Internal$EmptyBody;
+var _elm_lang$http$Http$header = _elm_lang$http$Http_Internal$Header;
+var _elm_lang$http$Http$request = _elm_lang$http$Http_Internal$Request;
+var _elm_lang$http$Http$post = F3(
+	function (url, body, decoder) {
+		return _elm_lang$http$Http$request(
+			{
+				method: 'POST',
+				headers: {ctor: '[]'},
+				url: url,
+				body: body,
+				expect: _elm_lang$http$Http$expectJson(decoder),
+				timeout: _elm_lang$core$Maybe$Nothing,
+				withCredentials: false
+			});
+	});
+var _elm_lang$http$Http$get = F2(
+	function (url, decoder) {
+		return _elm_lang$http$Http$request(
+			{
+				method: 'GET',
+				headers: {ctor: '[]'},
+				url: url,
+				body: _elm_lang$http$Http$emptyBody,
+				expect: _elm_lang$http$Http$expectJson(decoder),
+				timeout: _elm_lang$core$Maybe$Nothing,
+				withCredentials: false
+			});
+	});
+var _elm_lang$http$Http$getString = function (url) {
+	return _elm_lang$http$Http$request(
+		{
+			method: 'GET',
+			headers: {ctor: '[]'},
+			url: url,
+			body: _elm_lang$http$Http$emptyBody,
+			expect: _elm_lang$http$Http$expectString,
+			timeout: _elm_lang$core$Maybe$Nothing,
+			withCredentials: false
+		});
+};
+var _elm_lang$http$Http$toTask = function (_p0) {
+	var _p1 = _p0;
+	return A2(_elm_lang$http$Native_Http.toTask, _p1._0, _elm_lang$core$Maybe$Nothing);
+};
+var _elm_lang$http$Http$send = F2(
+	function (resultToMessage, request) {
+		return A2(
+			_elm_lang$core$Task$attempt,
+			resultToMessage,
+			_elm_lang$http$Http$toTask(request));
+	});
+var _elm_lang$http$Http$Response = F4(
+	function (a, b, c, d) {
+		return {url: a, status: b, headers: c, body: d};
+	});
+var _elm_lang$http$Http$BadPayload = F2(
+	function (a, b) {
+		return {ctor: 'BadPayload', _0: a, _1: b};
+	});
+var _elm_lang$http$Http$BadStatus = function (a) {
+	return {ctor: 'BadStatus', _0: a};
+};
+var _elm_lang$http$Http$NetworkError = {ctor: 'NetworkError'};
+var _elm_lang$http$Http$Timeout = {ctor: 'Timeout'};
+var _elm_lang$http$Http$BadUrl = function (a) {
+	return {ctor: 'BadUrl', _0: a};
+};
+var _elm_lang$http$Http$StringPart = F2(
+	function (a, b) {
+		return {ctor: 'StringPart', _0: a, _1: b};
+	});
+var _elm_lang$http$Http$stringPart = _elm_lang$http$Http$StringPart;
 var _rtfeldman$elm_css_util$Css_Helpers$toCssIdentifier = function (identifier) {
 	return A4(
 		_elm_lang$core$Regex$replace,
@@ -16138,6 +16496,37 @@ var _rtfeldman$elm_css$Html_Styled_Events$Options = F2(
 	function (a, b) {
 		return {stopPropagation: a, preventDefault: b};
 	});
+var _user$project$Api$decodeGloss = A2(
+	_elm_lang$core$Json_Decode$andThen,
+	function (translation) {
+		return _elm_lang$core$Json_Decode$succeed(
+			A2(
+				_elm_lang$core$String$join,
+				', ',
+				A2(_elm_lang$core$String$split, '\n', translation)));
+	},
+	A2(
+		_elm_lang$core$Json_Decode$field,
+		'results',
+		A2(
+			_elm_lang$core$Json_Decode$index,
+			0,
+			A2(
+				_elm_lang$core$Json_Decode$at,
+				{
+					ctor: '::',
+					_0: 'lexeme',
+					_1: {
+						ctor: '::',
+						_0: 'gloss',
+						_1: {ctor: '[]'}
+					}
+				},
+				_elm_lang$core$Json_Decode$string))));
+var _user$project$Api$getVerb = function (mamma) {
+	var query = A2(_elm_lang$core$Basics_ops['++'], 'http://mlrs.research.um.edu.mt/resources/gabra-api/lexemes/search?pos=VERB&s=', mamma);
+	return A2(_elm_lang$http$Http$get, query, _user$project$Api$decodeGloss);
+};
 var _user$project$Styles$message = _rtfeldman$elm_css$Html_Styled_Attributes$css(
 	{
 		ctor: '::',
@@ -16422,6 +16811,57 @@ var _user$project$Styles$buttonNextContainer = _rtfeldman$elm_css$Html_Styled_At
 									_0: _rtfeldman$elm_css$Css$marginTop(
 										_rtfeldman$elm_css$Css$em(2)),
 									_1: {ctor: '[]'}
+								}
+							}
+						}
+					}
+				}
+			}
+		}
+	});
+var _user$project$Styles$buttonTranslation = _rtfeldman$elm_css$Html_Styled_Attributes$css(
+	{
+		ctor: '::',
+		_0: _rtfeldman$elm_css$Css$fontSize(
+			_rtfeldman$elm_css$Css$em(1)),
+		_1: {
+			ctor: '::',
+			_0: _rtfeldman$elm_css$Css$textAlign(_rtfeldman$elm_css$Css$center),
+			_1: {
+				ctor: '::',
+				_0: _rtfeldman$elm_css$Css$height(
+					_rtfeldman$elm_css$Css$em(2)),
+				_1: {
+					ctor: '::',
+					_0: _rtfeldman$elm_css$Css$borderWidth(
+						_rtfeldman$elm_css$Css$em(0.1)),
+					_1: {
+						ctor: '::',
+						_0: _rtfeldman$elm_css$Css$borderColor(_user$project$Styles$magdaColors.linen),
+						_1: {
+							ctor: '::',
+							_0: _rtfeldman$elm_css$Css$borderStyle(_rtfeldman$elm_css$Css$solid),
+							_1: {
+								ctor: '::',
+								_0: _rtfeldman$elm_css$Css$displayFlex,
+								_1: {
+									ctor: '::',
+									_0: _rtfeldman$elm_css$Css$flex(
+										_rtfeldman$elm_css$Css$num(0.5)),
+									_1: {
+										ctor: '::',
+										_0: _rtfeldman$elm_css$Css$alignItems(_rtfeldman$elm_css$Css$center),
+										_1: {
+											ctor: '::',
+											_0: _rtfeldman$elm_css$Css$width(
+												_rtfeldman$elm_css$Css$pct(100)),
+											_1: {
+												ctor: '::',
+												_0: _rtfeldman$elm_css$Css$justifyContent(_rtfeldman$elm_css$Css$center),
+												_1: {ctor: '[]'}
+											}
+										}
+									}
 								}
 							}
 						}
@@ -17113,7 +17553,7 @@ var _user$project$RawHtml$githubRibbon = function (innerHtml) {
 		_rtfeldman$elm_css$Html_Styled_Attributes$property,
 		'innerHTML',
 		_elm_lang$core$Json_Encode$string('\n  <a href=\"https://github.com/pietro909/maltese-verb-forms\" class=\"github-corner\" aria-label=\"View source on Github\"><svg width=\"80\" height=\"80\" viewBox=\"0 0 250 250\" style=\"fill:#151513; color:#fff; position: absolute; top: 0; border: 0; right: 0;\" aria-hidden=\"true\"><path d=\"M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z\"></path><path d=\"M128.3,109.0 C113.8,99.7 119.0,89.6 119.0,89.6 C122.0,82.7 120.5,78.6 120.5,78.6 C119.2,72.0 123.4,76.3 123.4,76.3 C127.3,80.9 125.5,87.3 125.5,87.3 C122.9,97.6 130.6,101.9 134.4,103.2\" fill=\"currentColor\" style=\"transform-origin: 130px 106px;\" class=\"octo-arm\"></path><path d=\"M115.0,115.0 C114.9,115.1 118.7,116.5 119.8,115.4 L133.7,101.6 C136.9,99.2 139.9,98.4 142.2,98.6 C133.8,88.0 127.5,74.4 143.8,58.0 C148.5,53.4 154.0,51.2 159.7,51.0 C160.3,49.4 163.2,43.6 171.4,40.1 C171.4,40.1 176.1,42.5 178.8,56.2 C183.1,58.6 187.2,61.8 190.9,65.4 C194.5,69.0 197.7,73.2 200.1,77.6 C213.8,80.2 216.3,84.9 216.3,84.9 C212.7,93.1 206.9,96.0 205.4,96.6 C205.1,102.4 203.0,107.8 198.3,112.5 C181.9,128.9 168.3,122.5 157.7,114.1 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7 141.6,141.9 141.8,141.8 Z\" fill=\"currentColor\" class=\"octo-body\"></path></svg></a><style>.github-corner:hover .octo-arm{animation:octocat-wave 560ms ease-in-out}@keyframes octocat-wave{0%,100%{transform:rotate(0)}20%,60%{transform:rotate(-25deg)}40%,80%{transform:rotate(10deg)}}@media (max-width:500px){.github-corner:hover .octo-arm{animation:none}.github-corner .octo-arm{animation:octocat-wave 560ms ease-in-out}}</style>\n  ')));
-var _user$project$Main$initialModel = {verbsToSee: _user$project$Verbs$verbs, verb: _elm_lang$core$Maybe$Nothing, first: 5, message: '', done: false, showSuggestions: false};
+var _user$project$Main$initialModel = {verbsToSee: _user$project$Verbs$verbs, verb: _elm_lang$core$Maybe$Nothing, first: 5, message: '', done: false, showSuggestions: false, translation: _elm_lang$core$Maybe$Nothing};
 var _user$project$Main$generateNextData = F2(
 	function (inputVerbs, msg) {
 		return A2(
@@ -17259,10 +17699,14 @@ var _user$project$Main$buildButtons = F2(
 				},
 				start));
 	});
-var _user$project$Main$Model = F6(
-	function (a, b, c, d, e, f) {
-		return {verb: a, done: b, message: c, first: d, verbsToSee: e, showSuggestions: f};
+var _user$project$Main$Model = F7(
+	function (a, b, c, d, e, f, g) {
+		return {verb: a, translation: b, done: c, message: d, first: e, verbsToSee: f, showSuggestions: g};
 	});
+var _user$project$Main$Translation = function (a) {
+	return {ctor: 'Translation', _0: a};
+};
+var _user$project$Main$Translate = {ctor: 'Translate'};
 var _user$project$Main$ShowSuggestions = {ctor: 'ShowSuggestions'};
 var _user$project$Main$Restart = {ctor: 'Restart'};
 var _user$project$Main$Answer = function (a) {
@@ -17271,6 +17715,36 @@ var _user$project$Main$Answer = function (a) {
 var _user$project$Main$GetNext = {ctor: 'GetNext'};
 var _user$project$Main$viewNextVerb = F2(
 	function (verb, model) {
+		var translationView = A2(
+			_rtfeldman$elm_css$Html_Styled$div,
+			{
+				ctor: '::',
+				_0: _user$project$Styles$buttonTranslation,
+				_1: {ctor: '[]'}
+			},
+			{
+				ctor: '::',
+				_0: function () {
+					var _p11 = model.translation;
+					if (_p11.ctor === 'Just') {
+						return _rtfeldman$elm_css$Html_Styled$text(_p11._0);
+					} else {
+						return A2(
+							_rtfeldman$elm_css$Html_Styled$button,
+							{
+								ctor: '::',
+								_0: _rtfeldman$elm_css$Html_Styled_Events$onClick(_user$project$Main$Translate),
+								_1: {ctor: '[]'}
+							},
+							{
+								ctor: '::',
+								_0: _rtfeldman$elm_css$Html_Styled$text('show translation'),
+								_1: {ctor: '[]'}
+							});
+					}
+				}(),
+				_1: {ctor: '[]'}
+			});
 		var buttonNext = model.done ? A2(
 			_rtfeldman$elm_css$Html_Styled$div,
 			{
@@ -17329,8 +17803,8 @@ var _user$project$Main$viewNextVerb = F2(
 				_elm_lang$core$List$foldl,
 				F2(
 					function (letter, acc) {
-						var _p11 = letter;
-						switch (_p11.ctor) {
+						var _p12 = letter;
+						switch (_p12.ctor) {
 							case 'Consonant':
 								return {
 									ctor: '::',
@@ -17341,7 +17815,7 @@ var _user$project$Main$viewNextVerb = F2(
 										{ctor: '[]'},
 										{
 											ctor: '::',
-											_0: _rtfeldman$elm_css$Html_Styled$text(_p11._0),
+											_0: _rtfeldman$elm_css$Html_Styled$text(_p12._0),
 											_1: {ctor: '[]'}
 										}),
 									_1: acc
@@ -17356,7 +17830,7 @@ var _user$project$Main$viewNextVerb = F2(
 										{ctor: '[]'},
 										{
 											ctor: '::',
-											_0: _rtfeldman$elm_css$Html_Styled$text(_p11._0),
+											_0: _rtfeldman$elm_css$Html_Styled$text(_p12._0),
 											_1: {ctor: '[]'}
 										}),
 									_1: acc
@@ -17371,7 +17845,7 @@ var _user$project$Main$viewNextVerb = F2(
 										{ctor: '[]'},
 										{
 											ctor: '::',
-											_0: _rtfeldman$elm_css$Html_Styled$text(_p11._0),
+											_0: _rtfeldman$elm_css$Html_Styled$text(_p12._0),
 											_1: {ctor: '[]'}
 										}),
 									_1: acc
@@ -17386,7 +17860,7 @@ var _user$project$Main$viewNextVerb = F2(
 										{ctor: '[]'},
 										{
 											ctor: '::',
-											_0: _rtfeldman$elm_css$Html_Styled$text(_p11._0),
+											_0: _rtfeldman$elm_css$Html_Styled$text(_p12._0),
 											_1: {ctor: '[]'}
 										}),
 									_1: acc
@@ -17477,8 +17951,12 @@ var _user$project$Main$viewNextVerb = F2(
 						}),
 					_1: {
 						ctor: '::',
-						_0: buttonNext,
-						_1: {ctor: '[]'}
+						_0: translationView,
+						_1: {
+							ctor: '::',
+							_0: buttonNext,
+							_1: {ctor: '[]'}
+						}
 					}
 				}
 			}
@@ -17486,9 +17964,9 @@ var _user$project$Main$viewNextVerb = F2(
 	});
 var _user$project$Main$view = function (model) {
 	var mainNode = function () {
-		var _p12 = model.verb;
-		if (_p12.ctor === 'Just') {
-			return A2(_user$project$Main$viewNextVerb, _p12._0, model);
+		var _p13 = model.verb;
+		if (_p13.ctor === 'Just') {
+			return A2(_user$project$Main$viewNextVerb, _p13._0, model);
 		} else {
 			return {
 				ctor: '::',
@@ -17597,7 +18075,37 @@ var _user$project$Main$view = function (model) {
 										}
 									}
 								}),
-							_1: {ctor: '[]'}
+							_1: {
+								ctor: '::',
+								_0: A2(
+									_rtfeldman$elm_css$Html_Styled$div,
+									{
+										ctor: '::',
+										_0: _user$project$Styles$instructions,
+										_1: {ctor: '[]'}
+									},
+									{
+										ctor: '::',
+										_0: _rtfeldman$elm_css$Html_Styled$text('The translation is provided by '),
+										_1: {
+											ctor: '::',
+											_0: A2(
+												_rtfeldman$elm_css$Html_Styled$a,
+												{
+													ctor: '::',
+													_0: _rtfeldman$elm_css$Html_Styled_Attributes$href('http://mlrs.research.um.edu.mt/resources/gabra-api/'),
+													_1: {ctor: '[]'}
+												},
+												{
+													ctor: '::',
+													_0: _rtfeldman$elm_css$Html_Styled$text('Ġabra API'),
+													_1: {ctor: '[]'}
+												}),
+											_1: {ctor: '[]'}
+										}
+									}),
+								_1: {ctor: '[]'}
+							}
 						}),
 					_1: {
 						ctor: '::',
@@ -17625,12 +18133,43 @@ var _user$project$Main$init = {
 };
 var _user$project$Main$update = F2(
 	function (msg, model) {
-		var _p13 = msg;
-		switch (_p13.ctor) {
+		var _p14 = msg;
+		switch (_p14.ctor) {
+			case 'Translation':
+				if (_p14._0.ctor === 'Ok') {
+					var newModel = _elm_lang$core$Native_Utils.update(
+						model,
+						{
+							translation: _elm_lang$core$Maybe$Just(_p14._0._0)
+						});
+					return {ctor: '_Tuple2', _0: newModel, _1: _elm_lang$core$Platform_Cmd$none};
+				} else {
+					var newModel = _elm_lang$core$Native_Utils.update(
+						model,
+						{
+							translation: _elm_lang$core$Maybe$Just('sorry, couldn\'t translate this verb :-(')
+						});
+					return {ctor: '_Tuple2', _0: newModel, _1: _elm_lang$core$Platform_Cmd$none};
+				}
+			case 'Translate':
+				return A2(
+					_elm_lang$core$Maybe$withDefault,
+					{ctor: '_Tuple2', _0: model, _1: _elm_lang$core$Platform_Cmd$none},
+					A2(
+						_elm_lang$core$Maybe$map,
+						function (_p15) {
+							var _p16 = _p15;
+							var cmd = A2(
+								_elm_lang$http$Http$send,
+								_user$project$Main$Translation,
+								_user$project$Api$getVerb(_p16.word));
+							return {ctor: '_Tuple2', _0: model, _1: cmd};
+						},
+						model.verb));
 			case 'Next':
 				var newModel = _elm_lang$core$Native_Utils.update(
 					_user$project$Main$initialModel,
-					{verbsToSee: _p13._0._2, verb: _p13._0._1, first: _p13._0._0});
+					{verbsToSee: _p14._0._2, verb: _p14._0._1, first: _p14._0._0});
 				return {ctor: '_Tuple2', _0: newModel, _1: _elm_lang$core$Platform_Cmd$none};
 			case 'GetNext':
 				return {
@@ -17649,10 +18188,10 @@ var _user$project$Main$update = F2(
 			case 'Restart':
 				return _user$project$Main$init;
 			default:
-				var _p14 = model.verb;
-				if (_p14.ctor === 'Just') {
-					var _p15 = _p14._0;
-					return _elm_lang$core$Native_Utils.eq(_p15.form, _p13._0) ? {
+				var _p17 = model.verb;
+				if (_p17.ctor === 'Just') {
+					var _p18 = _p17._0;
+					return _elm_lang$core$Native_Utils.eq(_p18.form, _p14._0) ? {
 						ctor: '_Tuple2',
 						_0: _elm_lang$core$Native_Utils.update(
 							model,
@@ -17666,7 +18205,7 @@ var _user$project$Main$update = F2(
 								message: A2(
 									_elm_lang$core$Basics_ops['++'],
 									'wrong, it is ',
-									_elm_lang$core$Basics$toString(_p15.form)),
+									_elm_lang$core$Basics$toString(_p18.form)),
 								done: true
 							}),
 						_1: _elm_lang$core$Platform_Cmd$none
@@ -17678,13 +18217,13 @@ var _user$project$Main$update = F2(
 	});
 var _user$project$Main$main = _elm_lang$html$Html$program(
 	{
-		view: function (_p16) {
+		view: function (_p19) {
 			return _rtfeldman$elm_css$Html_Styled$toUnstyled(
-				_user$project$Main$view(_p16));
+				_user$project$Main$view(_p19));
 		},
 		update: _user$project$Main$update,
 		init: _user$project$Main$init,
-		subscriptions: function (_p17) {
+		subscriptions: function (_p20) {
 			return _elm_lang$core$Platform_Sub$none;
 		}
 	})();
