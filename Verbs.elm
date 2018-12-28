@@ -66,12 +66,12 @@ forms =
 
 
 indexOf : String -> List String -> Int
-indexOf a list =
+indexOf element list =
     list
-        |> List.indexedMap (,)
+        |> List.indexedMap (\a b -> (a,b))
         |> List.filterMap
             (\( i, x ) ->
-                if x == a then
+                if x == element then
                     Just i
                 else
                     Nothing

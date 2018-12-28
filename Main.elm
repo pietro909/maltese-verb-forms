@@ -1,8 +1,9 @@
 module Main exposing (..)
 
 import Api
+import Browser
 import Html
-import Html.Styled.Attributes exposing (css, disabled, name, content, href)
+import Html.Styled.Attributes exposing (css, disabled, name, href)
 import Html.Styled.Events exposing (onClick)
 import Html.Styled exposing (..)
 import Http
@@ -10,6 +11,7 @@ import Array
 import Styles
 import Maybe.Extra as Mx
 import Verbs exposing (Verb, verbs, LetterType(..), toPrintable, getWord)
+
 import Random
 import Random.List as RandomList
 import RawHtml
@@ -32,7 +34,8 @@ view model =
         div [ Styles.page ]
             [ node "meta"
                 [ name "viewport"
-                , content "width=device-width, initial-scale=1.0, maximum-scale=1, user-scalable=no"
+                -- TODO
+                --, content "width=device-width, initial-scale=1.0, maximum-scale=1, user-scalable=no"
                 ]
                 []
             , Styles.foreig
@@ -62,8 +65,8 @@ view model =
 viewNextVerb : Verb -> Model -> List (Html Msg)
 viewNextVerb verb model =
     let
-        verbView verb =
-            toPrintable verb
+        verbView v =
+            toPrintable v
                 |> List.reverse
                 |> List.foldl
                     (\letter acc ->
@@ -108,11 +111,11 @@ viewNextVerb verb model =
         theVerb =
             model.verb
                 |> Maybe.map
-                    (\verb ->
+                    (\v ->
                         if model.showSuggestions || model.done then
-                            verbView verb
+                            verbView v
                         else
-                            [ text (getWord verb) ]
+                            [ text (getWord v) ]
                     )
                 |> Maybe.withDefault ([ text "no verbs" ])
     in
@@ -125,7 +128,7 @@ viewNextVerb verb model =
                         , disabled model.done
                         , Styles.choice
                         ]
-                        [ text <| toString form ]
+                        [ text <| String.fromInt form ]
                 )
                 (buildButtons model.first verb.form)
         , div [ Styles.message ] [ text model.message ]
@@ -136,10 +139,11 @@ viewNextVerb verb model =
 
 {-| A trivial pseudo randomizer
 -}
+buildButtons : Int -> Int -> List Int
 buildButtons seed target =
     let
         isEven x =
-            rem x 2 == 0
+            modBy 2 x == 0
 
         numbersA =
             [ 1, 2, 3, 4, 5 ]
@@ -231,7 +235,7 @@ update msg model =
                     (\{ word, radicals, form } ->
                         let
                             cmd =
-                                Http.send Translation (Api.getVerb word)
+                                Api.getVerb Translation word
                         in
                             ( model, cmd )
                     )
@@ -259,7 +263,7 @@ update msg model =
                     if verb.form == form then
                         ( { model | message = "correct!", done = True }, Cmd.none )
                     else
-                        ( { model | message = "wrong, it is " ++ toString verb.form, done = True }, Cmd.none )
+                        ( { model | message = "wrong, it is " ++ String.fromInt verb.form, done = True }, Cmd.none )
 
                 Nothing ->
                     ( model, Cmd.none )
@@ -291,11 +295,14 @@ init =
     ( initialModel, generateNextData initialModel.verbsToSee Next )
 
 
-main : Program Never Model Msg
+main : Program (Maybe String) Model Msg
 main =
-    Html.program
-        { view = view >> toUnstyled
-        , update = update
-        , init = init
+    Browser.document
+        { init = \_ -> init
         , subscriptions = \_ -> Sub.none
+        , update = update
+        , view = \model -> {
+                title = "Maltese verbs"
+                , body = [view model |> toUnstyled ]
+        }
         }

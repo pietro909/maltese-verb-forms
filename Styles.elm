@@ -5,10 +5,20 @@ import Html.Styled.Attributes exposing (css)
 import Html.Styled.Events exposing (onClick)
 import Html.Styled exposing (Attribute)
 import Css exposing (..)
-import Css.Colors as Colors
-import Css.Foreign as Foreign
+import Css.Global as Global
 import Array
 
+gray : Color
+gray =
+    hex "AAAAAA"
+
+silver : Color
+silver =
+    hex "dddddd"
+
+white : Color
+white =
+    hex "ffffff"
 
 magdaColors =
     { wheat = hex "#F7E0BC"
@@ -45,7 +55,7 @@ disableIfNot can =
     if can then
         css []
     else
-        css [ color Colors.silver, backgroundColor Colors.gray ]
+        css [ color silver, backgroundColor gray ]
 
 
 choices : Attribute msg
@@ -101,9 +111,9 @@ container =
 
 
 foreig =
-    Foreign.global
-        [ Foreign.html [ height (pct 100) ]
-        , Foreign.body
+    Global.global
+        [ Global.html [ height (pct 100) ]
+        , Global.body
             [ height (pct 100)
 
             --, backgroundColor magdaColors.linen
@@ -143,7 +153,7 @@ buttonNextContainer =
 buttonNext : Attribute msg
 buttonNext =
     css
-        [ color Colors.white
+        [ color white
         , fontSize (em 1)
         , property "-webkit-appearance" "none"
         , borderWidth (em 0)
@@ -158,7 +168,7 @@ buttonTranslation =
         , textAlign center
         , height (em 2)
 
-        --color Colors.white
+        --color white
         --, property "-webkit-appearance" "none"
         , borderWidth (em 0.1)
 
