@@ -1,7 +1,7 @@
-module Verbs exposing (Verb, verbs, toPrintable, getWord, LetterType(..))
+module Verbs exposing (LetterType(..), Verb, getWord, toPrintable, verbs)
 
-import Dict
 import Array
+import Dict
 
 
 type alias Verb =
@@ -65,21 +65,6 @@ forms =
         ]
 
 
-indexOf : String -> List String -> Int
-indexOf a list =
-    list
-        |> List.indexedMap (,)
-        |> List.filterMap
-            (\( i, x ) ->
-                if x == a then
-                    Just i
-                else
-                    Nothing
-            )
-        |> List.head
-        |> Maybe.withDefault -1
-
-
 toPrintable : Verb -> List LetterType
 toPrintable { word, radicals, form } =
     let
@@ -87,41 +72,44 @@ toPrintable { word, radicals, form } =
             Dict.get form forms
                 |> Maybe.withDefault []
     in
-        word
-            |> String.split ""
-            |> List.foldl
-                (\current ( previous, result ) ->
-                    case ( previous, current ) of
-                        ( Nothing, "g" ) ->
-                            -- letter "g" is cached to see if it is "għajn"
-                            ( Just current, result )
+    word
+        |> String.split ""
+        |> List.foldl
+            (\current ( previous, result ) ->
+                case ( previous, current ) of
+                    ( Nothing, "g" ) ->
+                        -- letter "g" is cached to see if it is "għajn"
+                        ( Just current, result )
 
-                        ( Just "g", "ħ" ) ->
-                            ( Nothing, "ħg" :: result )
+                    ( Just "g", "ħ" ) ->
+                        ( Nothing, "ħg" :: result )
 
-                        ( Just "g", _ ) ->
-                            ( Nothing, current :: ("g" :: result) )
+                    ( Just "g", _ ) ->
+                        ( Nothing, current :: ("g" :: result) )
 
-                        _ ->
-                            ( Nothing, current :: result )
-                )
-                ( Nothing, [] )
-            |> Tuple.second
-            |> List.reverse
-            |> List.foldl
-                (\letter ( index, result ) ->
-                    if List.member index indexes then
-                        ( index + 1, Consonant letter :: result )
-                    else if List.member letter vowels then
-                        ( index + 1, Vowel letter :: result )
-                    else if List.member letter symbols then
-                        ( index + 1, Symbol letter :: result )
-                    else
-                        ( index + 1, Radical letter :: result )
-                )
-                ( 0, [] )
-            |> Tuple.second
-            |> List.reverse
+                    _ ->
+                        ( Nothing, current :: result )
+            )
+            ( Nothing, [] )
+        |> Tuple.second
+        |> List.reverse
+        |> List.foldl
+            (\letter ( index, result ) ->
+                if List.member index indexes then
+                    ( index + 1, Consonant letter :: result )
+
+                else if List.member letter vowels then
+                    ( index + 1, Vowel letter :: result )
+
+                else if List.member letter symbols then
+                    ( index + 1, Symbol letter :: result )
+
+                else
+                    ( index + 1, Radical letter :: result )
+            )
+            ( 0, [] )
+        |> Tuple.second
+        |> List.reverse
 
 
 getWord : Verb -> String

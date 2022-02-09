@@ -1,13 +1,12 @@
 module Styles exposing (..)
 
+import Array
+import Css exposing (..)
+import Css.Global as Global
 import Html
+import Html.Styled exposing (Attribute)
 import Html.Styled.Attributes exposing (css)
 import Html.Styled.Events exposing (onClick)
-import Html.Styled exposing (Attribute)
-import Css exposing (..)
-import Css.Colors as Colors
-import Css.Foreign as Foreign
-import Array
 
 
 magdaColors =
@@ -20,19 +19,19 @@ magdaColors =
 
 
 radical =
-    [ color magdaColors.goldenrod ]
+    css [ color magdaColors.goldenrod ]
 
 
 vowel =
-    []
+    css []
 
 
 consonant =
-    [ color magdaColors.lightSteelBlue ]
+    css [ color magdaColors.lightSteelBlue ]
 
 
 marker =
-    []
+    css []
 
 
 verb : Attribute msg
@@ -44,8 +43,9 @@ disableIfNot : Bool -> Attribute msg
 disableIfNot can =
     if can then
         css []
+
     else
-        css [ color Colors.silver, backgroundColor Colors.gray ]
+        css [ color magdaColors.linen, backgroundColor magdaColors.wheat ]
 
 
 choices : Attribute msg
@@ -100,10 +100,10 @@ container =
         ]
 
 
-foreig =
-    Foreign.global
-        [ Foreign.html [ height (pct 100) ]
-        , Foreign.body
+foreign =
+    Global.global
+        [ Global.html [ height (pct 100) ]
+        , Global.body
             [ height (pct 100)
 
             --, backgroundColor magdaColors.linen
@@ -143,7 +143,7 @@ buttonNextContainer =
 buttonNext : Attribute msg
 buttonNext =
     css
-        [ color Colors.white
+        [ color magdaColors.wheat
         , fontSize (em 1)
         , property "-webkit-appearance" "none"
         , borderWidth (em 0)
